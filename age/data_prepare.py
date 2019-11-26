@@ -1,14 +1,14 @@
 import os
 import torch
-from utils import data_split
+from utils.utils import data_split
 from torch.utils.data import DataLoader
 from torchvision import datasets, models, transforms
 import PIL
-from torch_utils import *
+from utils.torch_utils import *
 
 
 # Height and width of the CNN input image
-img_h, img_w = 256, 256
+img_h, img_w = 224, 224
 
 # Set train and valid directory paths
 #dataset_dir = './toy_dataset'
@@ -88,6 +88,7 @@ test_data_loader = DataLoader(data['test'],
                               shuffle=True,
                               num_workers=0)
 
+# 004 train data weights ####################
 
 # 004 statistics ############
 index_to_class = {v:k for k, v in data["train"].class_to_idx.items()}
