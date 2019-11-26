@@ -54,7 +54,10 @@ optimizer = optim.Adam(model.parameters())
 ## model training #####################################
 epochs = 200
 save_dir = "./output_models"
-save_name = "age"
+save_name = "age_dense"
+save_model = True
+save_thre = 50
+
 
 start = time.time()
 history = []
@@ -112,7 +115,6 @@ for epoch in range(1, epochs + 1):
         # Compute total accuracy in the whole batch and add to train_acc
         train_acc += acc.item() * inputs.size(0)
 
-            #print("Batch number: {:03d}, Training: Loss: {:.4f}, Accuracy: {:.4f}".format(i, loss.item(), acc.item()))
 
     epoch_valid_start = time.time()
     # Validation - No gradient tracking needed
@@ -145,6 +147,7 @@ for epoch in range(1, epochs + 1):
 
             # Compute total accuracy in the whole batch and add to valid_acc
             valid_acc += acc.item() * inputs.size(0)
+
     # Find average training loss and training accuracy
     avg_train_loss = train_loss/train_data_size
     avg_train_acc = train_acc/train_data_size
@@ -158,12 +161,15 @@ for epoch in range(1, epochs + 1):
     epoch_end = time.time()
 
     print("Epoch : {:d}/{:d}, Train : Loss: {:.4f}, Acc: {:.2f}%, Time: {:.2f}s".\
-            format(epoch, epochs, avg_train_loss, avg_train_acc*100, epoch_valid_start - epoch_train_start ), end= " | ")
+            format(epoch, epochs, avg_train_loss, \
+            avg_train_acc*100, epoch_valid_start - epoch_train_start ), end= " | ")
     print("Valid : Loss: {:.4f}, Acc: {:.2f}%, Time: {:.2f}s"\
             .format(avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_valid_start))
 
     # Save if the model has best accuracy till now
-    #torch.save(model, os.path.join(save_dir, save_name + "_" + str(epoch) + "_" + time_stamp() + '.pt'))
+    if save_model and (epoch >= save_thre):
+        torch.save(model, os.path.join(save_dir,\
+                save_name + "_" + str(epoch) + "_" + time_stamp() + '.pt'))
 
 
 

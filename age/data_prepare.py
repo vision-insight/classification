@@ -17,7 +17,7 @@ img_h, img_w = 224, 224
 dataset_dir = "/data/data/age_data/1_origin_split"
 
 # Batch size
-batch_size = 512
+batch_size = 256
 
 device = select_device()
 
