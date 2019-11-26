@@ -56,12 +56,9 @@ optimizer = optim.Adam(model.parameters())
 epochs = 200
 save_dir = "./output_models"
 save_name = "age_dense"
-<<<<<<< HEAD
 save_model = True
 save_thre = 50
 
-=======
->>>>>>> f471f76b75b101f70615ec49f44cc40f2d0cbab5
 
 start = time.time()
 history = []
