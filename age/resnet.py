@@ -45,7 +45,7 @@ model.fc = nn.Sequential(
 model = model.to(device)
 model = nn.DataParallel(model)
 # Define Optimizer and Loss Function
-loss_func = nn.NLLLoss()
+loss_func = nn.NLLLoss(weight=weight, reduction='sum')
 
 optimizer = optim.Adam(model.parameters())
 

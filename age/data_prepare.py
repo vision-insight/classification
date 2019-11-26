@@ -1,5 +1,6 @@
 import os
 import torch
+import pathlib
 from utils.utils import data_split
 from torch.utils.data import DataLoader
 from torchvision import datasets, models, transforms
@@ -12,7 +13,7 @@ from utils.utils import *
 img_h, img_w = 224, 224
 
 # Set train and valid directory paths
-#dataset_dir = './toy_dataset'
+# dataset_dir = './toy_dataset'
 dataset_dir = "/data/data/age_data/1_origin_split"
 
 # Batch size
@@ -95,10 +96,27 @@ test_data_loader = DataLoader(data['test'],
 # 004 train data weights ####################
 
 # 004 statistics ############
-index_to_class = {v:k for k, v in data["train"].class_to_idx.items()}
-print("[INFO] Num of classes : ", len(index_to_class))
-print("[INFO] class index : ", index_to_class)
+# index_to_class = {v:k for k, v in data["train"].class_to_idx.items()}
+# print("[INFO] Num of classes : ", len(index_to_class))
+# print("[INFO] class index : ", index_to_class)
 
+
+# 005 get the weights of each classes ############
+class_to_index = data["train"].class_to_idx
+def get_class_weights(train_data_dir, class_to_index):
+    index_to_class = sorted([[v,k] for k, v in class_to_index.items()],key = lambda x: x[0])
+    print(index_to_class)
+
+    # class_names = [i for i in class_to_index.keys()]
+    # class_labels = list(set([i[1] for i in class_to_index.items()]))
+    # print(class_names, class_labels)
+    weights = []
+    for index, class_name in index_to_class:
+        temp_num = len([i for i in pathlib.Path(os.path.join(train_data_dir, class_name)).rglob("*.jpg")])
+        weights.append(temp_num)
+    return torch.tensor(weights)
+
+class_weights = get_class_weights(train_data_dir, class_to_index)
 
 for data_type in ["train", "valid", "test"]:
     temp_1 = len(data[data_type])
