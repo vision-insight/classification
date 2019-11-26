@@ -18,23 +18,24 @@ from PIL import Image
 
 
 # Load pretrained ResNet50 Model
-model = models.resnet18(pretrained=True)
+model = models.densenet121(pretrained=True)
 
-# Freeze model parameters (for transfer learning)
-for param in model.parameters():
-    param.requires_grad = False
+# uncomment to use transfer learning
+# # Freeze model parameters (for transfer learning)
+# for param in model.parameters():
+#     param.requires_grad = False
 
 # Change the first conv layer to adapt single channel input
-# print(resnet50.modules)
-w = model.conv1.weight
-model.conv1 = nn.Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+# w = model.conv1.weight
+#model.conv1 = nn.Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
 #model.conv1.weight = torch.nn.Parameter(w[:, :1, :, :])
 
 # Change the final layer of ResNet50 Model for Transfer Learning
-fc_inputs = model.fc.in_features
+num_ftrs = model.classifier.in_features
+# model.classifier = nn.Linear(num_ftrs, 2)
 
-model.fc = nn.Sequential(
-    nn.Linear(fc_inputs, 256),
+model.classifier = nn.Sequential(
+    nn.Linear(num_ftrs, 256),
     nn.ReLU(),
     nn.Dropout(0.4),
     nn.Linear(256, len(class_to_index)), # Since 10 possible outputs
@@ -55,9 +56,12 @@ optimizer = optim.Adam(model.parameters())
 epochs = 200
 save_dir = "./output_models"
 save_name = "age_dense"
+<<<<<<< HEAD
 save_model = True
 save_thre = 50
 
+=======
+>>>>>>> f471f76b75b101f70615ec49f44cc40f2d0cbab5
 
 start = time.time()
 history = []
