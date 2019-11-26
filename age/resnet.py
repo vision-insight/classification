@@ -21,13 +21,14 @@ from PIL import Image
 model = models.resnet18(pretrained=True)
 
 # Freeze model parameters (for transfer learning)
-for param in model.parameters():
-    param.requires_grad = False
+#for param in model.parameters():
+#    param.requires_grad = False
 
 # Change the first conv layer to adapt single channel input
 # print(resnet50.modules)
-w = model.conv1.weight
-model.conv1 = nn.Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+
+#w = model.conv1.weight
+#model.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
 #model.conv1.weight = torch.nn.Parameter(w[:, :1, :, :])
 
 # Change the final layer of ResNet50 Model for Transfer Learning
