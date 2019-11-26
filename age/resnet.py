@@ -27,8 +27,8 @@ for param in model.parameters():
 # Change the first conv layer to adapt single channel input
 # print(resnet50.modules)
 w = model.conv1.weight
-model.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
-model.conv1.weight = torch.nn.Parameter(w[:, :1, :, :])
+model.conv1 = nn.Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+#model.conv1.weight = torch.nn.Parameter(w[:, :1, :, :])
 
 # Change the final layer of ResNet50 Model for Transfer Learning
 fc_inputs = model.fc.in_features
@@ -43,7 +43,7 @@ model.fc = nn.Sequential(
 
 # Convert model to be used on device
 model = model.to(device)
-
+model = nn.DataParallel(model)
 # Define Optimizer and Loss Function
 loss_func = nn.NLLLoss()
 
@@ -175,7 +175,7 @@ for epoch in range(1, epochs + 1):
             .format(avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_valid_start))
 
     # Save if the model has best accuracy till now
-    torch.save(model, os.path.join(save_dir, save_name + "_" + str(epoch) + "_" + time_stamp() + '.pt'))
+    #torch.save(model, os.path.join(save_dir, save_name + "_" + str(epoch) + "_" + time_stamp() + '.pt'))
 
 
 

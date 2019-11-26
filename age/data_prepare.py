@@ -4,8 +4,9 @@ from utils.utils import data_split
 from torch.utils.data import DataLoader
 from torchvision import datasets, models, transforms
 import PIL
+from PIL import Image
 from utils.torch_utils import *
-
+from utils.utils import *
 
 # Height and width of the CNN input image
 img_h, img_w = 224, 224
@@ -15,7 +16,7 @@ img_h, img_w = 224, 224
 dataset_dir = "/data/data/age_data/1_origin_split"
 
 # Batch size
-batch_size = 16
+batch_size = 512
 
 device = select_device()
 
@@ -31,9 +32,10 @@ image_transforms = {
     # transforms (a.k.a data augmentations) for the training images
     'train': transforms.Compose([
         # transfer the input image into gray scale
-        transforms.Grayscale(num_output_channels=1),
+        #transforms.Grayscale(num_output_channels=1),
         # resize the input image into the predefined scale
-        transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC), # (h, w)
+        transforms.Lambda(lambda img : pad_img(img, img_w)),
+        #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC), # (h, w)
         # random choose one of the predefined transforms (in the list) when performing the training process
         transforms.RandomChoice([transforms.RandomHorizontalFlip(),
                                 transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3)]),
@@ -42,14 +44,16 @@ image_transforms = {
     ]),
     # transforms for the valid images
     'valid': transforms.Compose([
-        transforms.Grayscale(num_output_channels=1),
-        transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
+        #transforms.Grayscale(num_output_channels=1),
+        #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
+        transforms.Lambda(lambda img : pad_img(img, img_w)),
         transforms.ToTensor(),
     ]),
     # transforms for the test images
     'test': transforms.Compose([
-        transforms.Grayscale(num_output_channels=1),
-        transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
+        #transforms.Grayscale(num_output_channels=1),
+        #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
+        transforms.Lambda(lambda img : pad_img(img, img_w)),
         transforms.ToTensor(),
     ])
 }
