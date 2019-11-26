@@ -37,7 +37,7 @@ model.fc = nn.Sequential(
     nn.Linear(fc_inputs, 256),
     nn.ReLU(),
     nn.Dropout(0.4),
-    nn.Linear(256, len(index_to_class)), # Since 10 possible outputs
+    nn.Linear(256, len(class_to_index)), # Since 10 possible outputs
     nn.LogSoftmax(dim=1) # For using NLLLoss()
 )
 
@@ -45,24 +45,12 @@ model.fc = nn.Sequential(
 model = model.to(device)
 model = nn.DataParallel(model)
 # Define Optimizer and Loss Function
-loss_func = nn.NLLLoss(weight=weight, reduction='sum')
+loss_func = nn.NLLLoss(weight=class_weights.cuda(), reduction='sum')
 
 optimizer = optim.Adam(model.parameters())
 
 
 
-
-
-
-#te(resnet,
-#                                            train_data_loader,
-#                                            valid_data_loader,
-#                                            device,
-#                                            loss_func,
-#                                            optimizer,
-#                                            epochs=num_epochs,
-#                                            save_dir = "./output_models",
-#                                            save_name = "age"
 ## model training #####################################
 epochs = 30
 save_dir = "./output_models"

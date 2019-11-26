@@ -113,8 +113,11 @@ def get_class_weights(train_data_dir, class_to_index):
     weights = []
     for index, class_name in index_to_class:
         temp_num = len([i for i in pathlib.Path(os.path.join(train_data_dir, class_name)).rglob("*.jpg")])
-        weights.append(temp_num)
-    return torch.tensor(weights)
+        weights.append(1.0/temp_num)
+    weights = torch.tensor(weights).float()
+    weights = weights/weights.sum()*10
+
+    return weights
 
 class_weights = get_class_weights(train_data_dir, class_to_index)
 
