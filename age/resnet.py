@@ -57,7 +57,7 @@ epochs = 200
 save_dir = "./output_models"
 save_name = "age_resnet"
 save_model = True
-save_thre = 50
+save_thre = 10
 
 
 start = time.time()
