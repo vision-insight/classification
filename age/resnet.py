@@ -195,7 +195,7 @@ plt.legend(['Tr Loss', 'Val Loss'])
 plt.xlabel('Epoch Number')
 plt.ylabel('Loss')
 plt.ylim(0,1)
-plt.savefig(dataset+'_loss_curve.png')
+plt.savefig( save_name + '_loss_curve.png')
 plt.show()
 
 
@@ -205,7 +205,7 @@ plt.legend(['Tr Accuracy', 'Val Accuracy'])
 plt.xlabel('Epoch Number')
 plt.ylabel('Accuracy')
 plt.ylim(0,1)
-plt.savefig(dataset+'_accuracy_curve.png')
+plt.savefig( save_name + '_accuracy_curve.png')
 plt.show()
 
 

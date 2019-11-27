@@ -1,11 +1,11 @@
+from  tqdm import tqdm
 from data_prepare import *
 from sklearn import metrics
 
-# torch.set_printoptions(precision=5, threshold=None, edgeitems=None, linewidth=None, profile=None)
+#torch.set_printoptions(precision=3, threshold=8, edgeitems=None, linewidth=None, profile=None)
 
 
-
-weights_file = "./model_30_20191120_152132.pt"
+weights_file = "./output_models/age_resnet_169_20191127_004826.pt"
 model = torch.load(weights_file)
 model = model.to(device)
 
@@ -14,7 +14,7 @@ model.eval()  # eval mode (batchnorm uses moving mean/variance instead of mini-b
 with torch.no_grad():
     label_list = []
     pred_label_list = []
-    for images, labels in test_data_loader:
+    for images, labels in tqdm(test_data_loader):
         label_list.extend(labels)
 
         images = images.to(device)
@@ -22,11 +22,11 @@ with torch.no_grad():
 
         outputs = model(images)
         log_probs, pred_labels = torch.max(outputs.data, 1)
-        pred_label_list.extend(pred_labels)
+        pred_label_list.extend(pred_labels.cpu())
 
     overall_acc = metrics.accuracy_score(label_list, pred_label_list)
     recall = metrics.recall_score(label_list, pred_label_list, average='macro') #None
-    print(overall_acc, recall)
+    print("overall acc: %.3f%%" % (overall_acc*100))
     
 
 
