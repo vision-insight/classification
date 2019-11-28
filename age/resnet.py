@@ -1,7 +1,7 @@
 
 ## refered to https://github.com/spmallick/learnopencv/blob/master/Image-Classification-in-PyTorch/image_classification_using_transfer_learning_in_pytorch.ipynb
 ## https://github.com/spmallick/learnopencv/blob/master/Image-classification-pre-trained-models/Image_Classification_using_pre_trained_models.ipynb
-
+import os
 import torch, torchvision
 from torchvision import datasets, models, transforms
 import torch.nn as nn
@@ -33,12 +33,12 @@ model = models.resnet18(pretrained=True)
 
 # Change the final layer of ResNet50 Model for Transfer Learning
 fc_inputs = model.fc.in_features
-
+print(fc_inputs)
 model.fc = nn.Sequential(
-    nn.Linear(fc_inputs, 256),
+    nn.Linear(fc_inputs, 512),
     nn.ReLU(),
-    nn.Dropout(0.4),
-    nn.Linear(256, len(class_to_index)), # Since 10 possible outputs
+    nn.Dropout(0.5),
+    nn.Linear(512, len(class_to_index)), # Since 10 possible outputs
     nn.LogSoftmax(dim=1) # For using NLLLoss()
 )
 
@@ -53,7 +53,7 @@ optimizer = optim.Adam(model.parameters())
 
 
 ## model training #####################################
-epochs = 200
+epochs = 30
 save_dir = "./output_models"
 save_name = "age_resnet"
 save_model = True

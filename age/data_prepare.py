@@ -1,23 +1,24 @@
 import os
 import torch
 import pathlib
-from utils.utils import data_split
+#from utils.utils import data_split
 from torch.utils.data import DataLoader
 from torchvision import datasets, models, transforms
 import PIL
 from PIL import Image
 from utils.torch_utils import *
 from utils.utils import *
+os.system("clear")
 
 # Height and width of the CNN input image
-img_h, img_w = 224, 224
+img_h, img_w = 256, 256
 
 # Set train and valid directory paths
 # dataset_dir = './toy_dataset'
-dataset_dir = "/data/data/age_data/1_origin_split"
+dataset_dir = "/data/data/age_data/3_bigpic_split"
 
 # Batch size
-batch_size = 256
+batch_size = 128
 
 device = select_device()
 
