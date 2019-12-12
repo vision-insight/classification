@@ -12,7 +12,6 @@ from tools.metrics import *
 
 
 weights_file = "./output_models/age_resnet_30_20191128_050216.pt"
-
 model = torch.load(weights_file)
 model = model.to(device)
 
@@ -31,16 +30,18 @@ with torch.no_grad():
         log_probs, pred_labels = torch.max(outputs.data, 1)
         pred_label_list.extend(pred_labels.cpu())
 
+    overall_acc = metrics.accuracy_score(label_list, pred_label_list)
+    overall_recall = metrics.recall_score(label_list, pred_label_list, average='micro') #None
+    over_prec = metrics.precision_score(label_list, pred_label_list, average = "micro")
+    ave_prec = metrics.precision_score(label_list, pred_label_list, average = "macro")
+    ave_recall = metrics.recall_score(label_list, pred_label_list, average = "macro")
+
     #print("overall acc: %.3f%%" % (overall_acc*100), overall_prec, ave_prec, recall)
-    print("[INFO] overall  acc : %.2f\
-                  mean     acc : %.2f\
-                  overall prec : %.2f\
-                  mean    prec : %.2f\
-                  mean  recall : %.2f\ " %
-                  overall_accuracy(label_list, pred_label_list), #overall_recall(label_list, pred_label_list),
-                  mean_accuracy(label_list, pred_label_list),
-                  overall_prec(label_list, pred_label_list),
-                  mean_prec(label_list, pred_label_list),
-                  mean_recall(label_list, pred_label_list)) 
+    print(overall_acc, over_prec, ave_prec, ave_recall)
+    print(overall_accuracy(label_list, pred_label_list),
+            #overall_recall(label_list, pred_label_list),
+            overall_prec(label_list, pred_label_list),
+            mean_prec(label_list, pred_label_list),
+            mean_recall(label_list, pred_label_list)) 
 
 

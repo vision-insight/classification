@@ -1,7 +1,7 @@
 
 ## refered to https://github.com/spmallick/learnopencv/blob/master/Image-Classification-in-PyTorch/image_classification_using_transfer_learning_in_pytorch.ipynb
 ## https://github.com/spmallick/learnopencv/blob/master/Image-classification-pre-trained-models/Image_Classification_using_pre_trained_models.ipynb
-import os
+
 import torch, torchvision
 from torchvision import datasets, models, transforms
 import torch.nn as nn
@@ -18,34 +18,33 @@ from PIL import Image
 
 
 # Load pretrained ResNet50 Model
-model = models.resnet18(pretrained=True)
+model = models.densenet121(pretrained=True)
 
-# Freeze model parameters (for transfer learning)
-#for param in model.parameters():
-#    param.requires_grad = False
+# uncomment to use transfer learning
+# # Freeze model parameters (for transfer learning)
+# for param in model.parameters():
+#     param.requires_grad = False
 
 # Change the first conv layer to adapt single channel input
-# print(resnet50.modules)
-
-#w = model.conv1.weight
-#model.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+# w = model.conv1.weight
+#model.conv1 = nn.Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
 #model.conv1.weight = torch.nn.Parameter(w[:, :1, :, :])
 
 # Change the final layer of ResNet50 Model for Transfer Learning
-fc_inputs = model.fc.in_features
-model.fc = nn.Sequential(
-    nn.Linear(fc_inputs, 512),
+num_ftrs = model.classifier.in_features
+# model.classifier = nn.Linear(num_ftrs, 2)
+
+model.classifier = nn.Sequential(
+    nn.Linear(num_ftrs, 256),
     nn.ReLU(),
-    nn.Dropout(0.5),
-    nn.Linear(512, len(class_to_index)), # Since 10 possible outputs
+    nn.Dropout(0.4),
+    nn.Linear(256, len(class_to_index)), # Since 10 possible outputs
     nn.LogSoftmax(dim=1) # For using NLLLoss()
 )
 
-
-gpu_ids = [0, 1]
 # Convert model to be used on device
-model = nn.DataParallel(model, device_ids = gpu_ids)
-model = model.cuda(device  = 0)
+model = model.to(device)
+model = nn.DataParallel(model)
 # Define Optimizer and Loss Function
 loss_func = nn.NLLLoss(weight=class_weights.cuda(), reduction='sum')
 
@@ -54,11 +53,11 @@ optimizer = optim.Adam(model.parameters())
 
 
 ## model training #####################################
-epochs = 100
+epochs = 200
 save_dir = "./output_models"
-save_name = "age_resnet"
+save_name = "age_dense"
 save_model = True
-save_thre = 20
+save_thre = 50
 
 
 start = time.time()
@@ -83,8 +82,8 @@ for epoch in range(1, epochs + 1):
 
     for i, (inputs, labels) in enumerate(train_data_loader):
 
-        inputs = inputs.cuda(device = 0)
-        labels = labels.cuda(device = 0)
+        inputs = inputs.to(device)
+        labels = labels.to(device)
 
         # Clean existing gradients
         optimizer.zero_grad()
@@ -127,8 +126,8 @@ for epoch in range(1, epochs + 1):
 
         # Validation loop
         for j, (inputs, labels) in enumerate(valid_data_loader):
-            inputs = inputs.cuda(device = 0)
-            labels = labels.cuda(device = 0)
+            inputs = inputs.to(device)
+            labels = labels.to(device)
 
             # Forward pass - compute outputs on input data using the model
             outputs = model(inputs)
@@ -163,20 +162,31 @@ for epoch in range(1, epochs + 1):
     epoch_end = time.time()
 
     print("Epoch : {:d}/{:d}, Train : Loss: {:.4f}, Acc: {:.2f}%, Time: {:.2f}s".\
-            format(epoch, epochs, avg_train_loss,\
+            format(epoch, epochs, avg_train_loss, \
             avg_train_acc*100, epoch_valid_start - epoch_train_start ), end= " | ")
     print("Valid : Loss: {:.4f}, Acc: {:.2f}%, Time: {:.2f}s"\
             .format(avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_valid_start))
 
     # Save if the model has best accuracy till now
     if save_model and (epoch >= save_thre):
-        torch.save(model.module.state_dict(), os.path.join(save_dir, \
-                save_name + "_" + str(epoch) + "_" + time_stamp() + '.pth'))
+        torch.save(model, os.path.join(save_dir,\
+                save_name + "_" + str(epoch) + "_" + time_stamp() + '.pt'))
 
 
 
 
 
+
+
+#trained_model, history = train_and_validate(resnet,
+#                                            train_data_loader,
+#                                            valid_data_loader,
+#                                            device,
+#                                            loss_func,
+#                                            optimizer,
+#                                            epochs=num_epochs,
+#                                            save_dir = "./output_models",
+#                                            save_name = "age")
 
 
 history = np.array(history)
@@ -185,7 +195,7 @@ plt.legend(['Tr Loss', 'Val Loss'])
 plt.xlabel('Epoch Number')
 plt.ylabel('Loss')
 plt.ylim(0,1)
-plt.savefig( save_name + '_loss_curve.png')
+plt.savefig(dataset+'_loss_curve.png')
 plt.show()
 
 
@@ -195,7 +205,7 @@ plt.legend(['Tr Accuracy', 'Val Accuracy'])
 plt.xlabel('Epoch Number')
 plt.ylabel('Accuracy')
 plt.ylim(0,1)
-plt.savefig( save_name + '_accuracy_curve.png')
+plt.savefig(dataset+'_accuracy_curve.png')
 plt.show()
 
 

@@ -1,33 +1,26 @@
 import os
 import torch
 import pathlib
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from torchvision import datasets, models, transforms
 import PIL
 from PIL import Image
 from utils.torch_utils import *
 from utils.utils import *
-from utils.ImageFolder import ImageFolder
 os.system("clear")
 
 # Height and width of the CNN input image
 img_h, img_w = 180,180
 
 # Set train and valid directory paths
+# dataset_dir = './toy_dataset'
 dataset_dir = "/data/lulei/data/age_data/data_split"
-idx_and_class = {0 : '0-6',
-                 1 : '6-12',
-                 2 : '12-18',
-                 3 : '18-25', 
-                 4 : '25-40',
-                 5 : '40-55',
-                 6 : '55+'}
-# Batch size
-batch_size = 512
-print("[INFO] batch size : ", batch_size)
 
-#device = select_device()
-#print(device, )
+# Batch size
+batch_size = 128
+
+device = select_device()
+
 
 train_data_dir= os.path.join(dataset_dir, 'train')
 valid_data_dir = os.path.join(dataset_dir, 'valid')
@@ -68,19 +61,16 @@ image_transforms = {
 
 # 002 Load Data from folders   ##################
 data = {
-    'train': ImageFolder(root=train_data_dir,
-                                  idx_and_class = idx_and_class,
+    'train': datasets.ImageFolder(root=train_data_dir,
                                   transform=image_transforms['train'],
-                                  ),
+                                  target_transform=None),
 
-    'valid': ImageFolder(root=valid_data_dir, 
-                                  idx_and_class = idx_and_class,
+    'valid': datasets.ImageFolder(root=valid_data_dir, 
                                   transform=image_transforms['valid'],
                                   target_transform=None),
 
 
-    'test': ImageFolder(root=test_data_dir, 
-                                  idx_and_class = idx_and_class,
+    'test': datasets.ImageFolder(root=test_data_dir, 
                                  transform=image_transforms['test'],
                                  target_transform=None)
 }
@@ -105,9 +95,9 @@ test_data_loader = DataLoader(data['test'],
 
 # 004 get the weights of each classes ############
 class_to_index = data["train"].class_to_idx
-print("[INFO] class to index : ",class_to_index)
-class_weights = get_class_weights(train_data_dir, idx_and_class)
-print("[INFO] class weights : ", class_weights)
+print(class_to_index)
+class_weights = get_class_weights(train_data_dir, class_to_index)
+print(class_weights)
 
 # 006 show the image quantity in each set
 for data_type in ["train", "valid", "test"]:

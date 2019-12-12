@@ -33,6 +33,7 @@ model = models.resnet18(pretrained=True)
 
 # Change the final layer of ResNet50 Model for Transfer Learning
 fc_inputs = model.fc.in_features
+print(fc_inputs)
 model.fc = nn.Sequential(
     nn.Linear(fc_inputs, 512),
     nn.ReLU(),
@@ -41,11 +42,9 @@ model.fc = nn.Sequential(
     nn.LogSoftmax(dim=1) # For using NLLLoss()
 )
 
-
-gpu_ids = [0, 1]
 # Convert model to be used on device
-model = nn.DataParallel(model, device_ids = gpu_ids)
-model = model.cuda(device  = 0)
+model = model.to(device)
+model = nn.DataParallel(model)
 # Define Optimizer and Loss Function
 loss_func = nn.NLLLoss(weight=class_weights.cuda(), reduction='sum')
 
@@ -83,8 +82,8 @@ for epoch in range(1, epochs + 1):
 
     for i, (inputs, labels) in enumerate(train_data_loader):
 
-        inputs = inputs.cuda(device = 0)
-        labels = labels.cuda(device = 0)
+        inputs = inputs.to(device)
+        labels = labels.to(device)
 
         # Clean existing gradients
         optimizer.zero_grad()
@@ -127,8 +126,8 @@ for epoch in range(1, epochs + 1):
 
         # Validation loop
         for j, (inputs, labels) in enumerate(valid_data_loader):
-            inputs = inputs.cuda(device = 0)
-            labels = labels.cuda(device = 0)
+            inputs = inputs.to(device)
+            labels = labels.to(device)
 
             # Forward pass - compute outputs on input data using the model
             outputs = model(inputs)
@@ -177,6 +176,17 @@ for epoch in range(1, epochs + 1):
 
 
 
+
+
+#trained_model, history = train_and_validate(resnet,
+#                                            train_data_loader,
+#                                            valid_data_loader,
+#                                            device,
+#                                            loss_func,
+#                                            optimizer,
+#                                            epochs=num_epochs,
+#                                            save_dir = "./output_models",
+#                                            save_name = "age")
 
 
 history = np.array(history)
