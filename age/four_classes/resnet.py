@@ -53,11 +53,11 @@ optimizer = optim.Adam(model.parameters())
 
 
 ## model training #####################################
-epochs = 30
+epochs = 100
 save_dir = "./output_models"
 save_name = "age_resnet"
 save_model = True
-save_thre = 10
+save_thre = 20
 
 
 start = time.time()
@@ -169,8 +169,8 @@ for epoch in range(1, epochs + 1):
 
     # Save if the model has best accuracy till now
     if save_model and (epoch >= save_thre):
-        torch.save(model, os.path.join(save_dir, \
-                save_name + "_" + str(epoch) + "_" + time_stamp() + '.pt'))
+        torch.save(model.module.state_dict(), os.path.join(save_dir, \
+                save_name + "_" + str(epoch) + "_" + time_stamp() + '.pth'))
 
 
 

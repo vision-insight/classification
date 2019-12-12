@@ -11,7 +11,7 @@ from tools.metrics import *
 #torch.set_printoptions(precision=3, threshold=8, edgeitems=None, linewidth=None, profile=None)
 
 
-weights_file = "./output_models/age_resnet_169_20191127_004826.pt"
+weights_file = "./output_models/age_resnet_30_20191128_050216.pt"
 model = torch.load(weights_file)
 model = model.to(device)
 
