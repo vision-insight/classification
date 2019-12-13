@@ -10,11 +10,15 @@ from utils.utils import *
 from utils.ImageFolder import ImageFolder
 os.system("clear")
 
+
+# 000  Assignment of variables ###################################
+
 # Height and width of the CNN input image
 img_h, img_w = 180,180
 
 # Set train and valid directory paths
 dataset_dir = "/data/lulei/data/age_data/data_split"
+# Set the index and the corresponding class name (folder name) of the classes
 idx_and_class = {0 : '0-6',
                  1 : '6-12',
                  2 : '12-18',
@@ -26,8 +30,6 @@ idx_and_class = {0 : '0-6',
 batch_size = 512
 print("[INFO] batch size : ", batch_size)
 
-#device = select_device()
-#print(device, )
 
 train_data_dir= os.path.join(dataset_dir, 'train')
 valid_data_dir = os.path.join(dataset_dir, 'valid')
@@ -106,6 +108,7 @@ test_data_loader = DataLoader(data['test'],
 # 004 get the weights of each classes ############
 class_to_index = data["train"].class_to_idx
 print("[INFO] class to index : ",class_to_index)
+
 class_weights = get_class_weights(train_data_dir, idx_and_class)
 print("[INFO] class weights : ", class_weights)
 
