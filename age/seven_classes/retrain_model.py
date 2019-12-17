@@ -29,6 +29,7 @@ if isinstance(model, collections.OrderedDict):
     # Convert model to be used on device
     model = nn.DataParallel(model, device_ids = [0,1] )
     model = model.cuda(device = 0)
+
 elif isinstance(model, torch.nn.parallel.data_parallel.DataParallel):
     pass
 

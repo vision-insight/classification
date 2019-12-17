@@ -10,195 +10,116 @@ import time
 from torchsummary import summary
 import numpy as np
 import matplotlib.pyplot as plt
-import os
-from utils.torch_utils import *
 from data_prepare import *
-
 from PIL import Image
+from torch.optim import lr_scheduler
+import copy
 
+
+###################### 00  model defination ###################################
 
 # Load pretrained ResNet50 Model
 model = models.resnet18(pretrained=True)
 
-# Freeze model parameters (for transfer learning)
-#for param in model.parameters():
-#    param.requires_grad = False
-
-# Change the first conv layer to adapt single channel input
-# print(resnet50.modules)
-
-#w = model.conv1.weight
-#model.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
-#model.conv1.weight = torch.nn.Parameter(w[:, :1, :, :])
-
 # Change the final layer of ResNet50 Model for Transfer Learning
 fc_inputs = model.fc.in_features
 model.fc = nn.Sequential(
-    nn.Linear(fc_inputs, 512),
-    nn.ReLU(),
-    nn.Dropout(0.5),
-    nn.Linear(512, len(class_to_index)), # Since 10 possible outputs
-    nn.LogSoftmax(dim=1) # For using NLLLoss()
-)
+                    nn.Linear(fc_inputs, 512),
+                    nn.ReLU(),
+                    nn.Dropout(0.5),
+                    nn.Linear(512, len(class_to_index)), # Since 10 possible outputs
+                    nn.LogSoftmax(dim=1) # For using NLLLoss()
+                        )
 
+######################  01 training parameters ############################
 
 gpu_ids = [0, 1]
+
 # Convert model to be used on device
 model = nn.DataParallel(model, device_ids = gpu_ids)
 model = model.cuda(device  = 0)
-# Define Optimizer and Loss Function
-loss_func = nn.NLLLoss(weight=class_weights.cuda(), reduction='sum')
 
-optimizer = optim.Adam(model.parameters())
+criterion = nn.CrossEntropyLoss(weight = class_weights.cuda(), reduction = "sum")
+
+# Observe that all parameters are being optimized
+optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+
+# Decay LR by a factor of 0.1 every 7 epochs
+scheduler = exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
+
+#####################  02  model training #####################################
+num_epochs = 10
+#save_dir = "./output_models"
+#save_name = "age_resnet"
+#save_model = True
+#save_thre = 20
 
 
+since = time.time()
 
-## model training #####################################
-epochs = 100
-save_dir = "./output_models"
-save_name = "age_resnet"
-save_model = True
-save_thre = 20
-
-
-start = time.time()
-history = []
+best_model_wts = copy.deepcopy(model.state_dict())
 best_acc = 0.0
 
-train_data_size = len(train_data_loader.dataset)
-valid_data_size = len(valid_data_loader.dataset)
+for epoch in range(1, num_epochs + 1):
 
-for epoch in range(1, epochs + 1):
-    epoch_train_start = time.time()
+    print("Epoch {}/{}".format(epoch, num_epochs))
+    print("-" * 10)
 
-    # Set to training mode
-    model.train()
+    # Each epoch has a training and validation phase
+    for phase in ["train", "valid"]:
+        if phase == "train":
+            model.train() # Set model to training mode
+        else:
+            model.eval()  # Set model to evaluate mode
+        
+        start_time = time.time()
+        running_loss = 0.0
+        running_corrects = 0
 
-    # Loss and Accuracy within the epoch
-    train_loss = 0.0
-    train_acc = 0.0
-
-    valid_loss = 0.0
-    valid_acc = 0.0
-
-    for i, (inputs, labels) in enumerate(train_data_loader):
-
-        inputs = inputs.cuda(device = 0)
-        labels = labels.cuda(device = 0)
-
-        # Clean existing gradients
-        optimizer.zero_grad()
-
-        # Forward pass - compute outputs on input data using the model
-        outputs = model(inputs)
-
-        # Compute loss
-        loss = loss_func(outputs, labels,)
-
-        # Backpropagate the gradients
-        loss.backward()
-            
-        # Update the parameters
-        optimizer.step()
-
-        # Compute the total loss for the batch and add it to train_loss
-        train_loss += loss.item() * inputs.size(0)
-
-        # Compute the accuracy
-        ret, predictions = torch.max(outputs.data, 1)
-        correct_counts = predictions.eq(labels.data.view_as(predictions))
-
-            # correct = (predictions == labels).sum().float()
-            # print(correct_counts, correct, type(correct_counts), type(correct))
-
-            # Convert correct_counts to float and then compute the mean
-        acc = torch.mean(correct_counts.type(torch.FloatTensor))
-
-        # Compute total accuracy in the whole batch and add to train_acc
-        train_acc += acc.item() * inputs.size(0)
-
-
-    epoch_valid_start = time.time()
-    # Validation - No gradient tracking needed
-    with torch.no_grad():
-
-        # Set to evaluation mode
-        model.eval()
-
-        # Validation loop
-        for j, (inputs, labels) in enumerate(valid_data_loader):
+        # Iterate over data
+        for inputs, labels in dataloaders[phase]:
             inputs = inputs.cuda(device = 0)
             labels = labels.cuda(device = 0)
 
-            # Forward pass - compute outputs on input data using the model
-            outputs = model(inputs)
+            # zero the parameter gradients
+            optimizer.zero_grad()
 
-            # Compute loss
-            loss = loss_func(outputs, labels)
+            # forward
+            # track history if only in train
+            with torch.set_grad_enabled(phase == "train"):
+                outputs = model(inputs)
+                _, preds = torch.max(outputs, 1)
+                loss = criterion(outputs, labels)
 
-            # Compute the total loss for the batch and add it to valid_loss
-            valid_loss += loss.item() * inputs.size(0)
+                # backward + optimize only if in training phase
+                if phase == "train":
+                    loss.backward()
+                    optimizer.step()
 
-            # Calculate validation accuracy
-            ret, predictions = torch.max(outputs.data, 1)
+            # statistics
+            running_loss += loss.item() * inputs.size(0)
+            running_corrects += torch.sum(preds == labels.data)
 
-            correct_counts = predictions.eq(labels.data.view_as(predictions))
+        if phase == "train":
+            scheduler.step()
 
-            # Convert correct_counts to float and then compute the mean
-            acc = torch.mean(correct_counts.type(torch.FloatTensor))
+        epoch_loss = running_loss / len(dataloaders[phase].dataset)
+        epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
+        
+        duration = time.time() - start_time
+        print("{} Loss: {:.4f} | Acc: {:.4f} | Time elapsed: {:.0f}m {:.0f}s".format(
+               phase, epoch_loss, epoch_acc, duration // 60, duration % 60))
 
-            # Compute total accuracy in the whole batch and add to valid_acc
-            valid_acc += acc.item() * inputs.size(0)
+        # deep copy the model
+        if phase == "val" and epoch_acc > best_acc:
+            best_acc = epoch_acc
+            best_model_wts = copy.deepcopy(model.state_dict())
 
-    # Find average training loss and training accuracy
-    avg_train_loss = train_loss/train_data_size
-    avg_train_acc = train_acc/train_data_size
+    print()
 
-    # Find average training loss and training accuracy
-    avg_valid_loss = valid_loss/valid_data_size
-    avg_valid_acc = valid_acc/valid_data_size
+time_epapsed = time.time() - since
+print("Training complete in {:.0f}m {:.0f}s".format(
+       time_elapsed // 60, time_epapsed %60))
+print("Best val Acc: {:4f}".format(best_acc))
 
-    history.append([avg_train_loss, avg_valid_loss, avg_train_acc, avg_valid_acc])
-
-    epoch_end = time.time()
-
-    print("Epoch : {:d}/{:d}, Train : Loss: {:.4f}, Acc: {:.2f}%, Time: {:.2f}s".\
-            format(epoch, epochs, avg_train_loss,\
-            avg_train_acc*100, epoch_valid_start - epoch_train_start ), end= " | ")
-    print("Valid : Loss: {:.4f}, Acc: {:.2f}%, Time: {:.2f}s"\
-            .format(avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_valid_start))
-
-    # Save if the model has best accuracy till now
-    if save_model and (epoch >= save_thre):
-        torch.save(model.module.state_dict(), os.path.join(save_dir, \
-                save_name + "_" + str(epoch) + "_" + time_stamp() + '.pth'))
-
-
-
-
-
-
-
-history = np.array(history)
-plt.plot(history[:,0:2])
-plt.legend(['Tr Loss', 'Val Loss'])
-plt.xlabel('Epoch Number')
-plt.ylabel('Loss')
-plt.ylim(0,1)
-plt.savefig( save_name + '_loss_curve.png')
-plt.show()
-
-
-
-plt.plot(history[:,2:4])
-plt.legend(['Tr Accuracy', 'Val Accuracy'])
-plt.xlabel('Epoch Number')
-plt.ylabel('Accuracy')
-plt.ylim(0,1)
-plt.savefig( save_name + '_accuracy_curve.png')
-plt.show()
-
-
-# Print the model to be trained
-#summary(resnet50, input_size=(3, 224, 224), batch_size=bs, device='cuda')
 
