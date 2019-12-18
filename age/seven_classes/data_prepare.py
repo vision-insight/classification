@@ -104,17 +104,17 @@ dataloaders = {
         "train": DataLoader(data['train'], 
                             batch_size=batch_size, 
                             shuffle=True,
-                            num_workers= cpu_count()),
+                            num_workers= cpu_count()//2),
 
         "valid": DataLoader(data['valid'], 
                             batch_size=batch_size, 
                             shuffle=True,
-                            num_workers= cpu_count()),
+                            num_workers= cpu_count()//2),
 
         "test":  DataLoader(data['test'],
                             batch_size=batch_size, 
                             shuffle=True,
-                            num_workers= cpu_count())
+                            num_workers= cpu_count()//2)
             }
 
 
@@ -123,7 +123,7 @@ dataloaders = {
 class_to_index = data["train"].class_to_idx
 print("[INFO] class to index : ",class_to_index)
 
-class_weights = get_class_weights(train_data_dir, idx_and_class)
+class_weights = get_class_weights(train_data_dir, idx_and_class, idx_first = True)
 print("[INFO] class weights : ", class_weights)
 
 ############# 005 show the image quantity in each set ##########

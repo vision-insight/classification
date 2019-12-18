@@ -33,7 +33,7 @@ model.fc = nn.Sequential(
 
 ######################  01 training parameters ############################
 
-gpu_ids = [0, 1]
+gpu_ids = [0]
 
 # Convert model to be used on device
 model = nn.DataParallel(model, device_ids = gpu_ids)
@@ -48,7 +48,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 scheduler = exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
 #####################  02  model training #####################################
-num_epochs = 10
+num_epochs = 100
 save_dir = "./output_models"
 save_name = "age_7_resnet"
 
