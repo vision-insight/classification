@@ -26,7 +26,7 @@ def pad_img(image, long_side):
 
 
 
-def get_class_weights(input_dir, idx_to_class):
+def get_class_weights(input_dir, idx_to_class, idx_first = True):
     '''
         get the weights of each classes accroding to the inverse ratio of th corresponding sample numbers
         input_dir : the root dir of the image classes, the folder structure under ipput_dir should be:
@@ -41,10 +41,16 @@ def get_class_weights(input_dir, idx_to_class):
                          format of {class_name_1:0, classe_name_2:2,}. this could be obtained from .class_to_index
                          method of instance of ImageFolder
     '''
+
     #index_to_class = sorted([[v,k] for k, v in class_to_index.items()],key = lambda x: x[0])
 
     weights = []
-    for index, class_name in idx_to_class.items():
+    for key, value in idx_to_class.items():
+        if idx_first:
+            idx, class_name = key, value
+        else:
+            idx, class_name = value, key
+
         if isinstance(class_name, list):
             temp_sum = 0
             for subclass_name in class_name:
@@ -57,3 +63,4 @@ def get_class_weights(input_dir, idx_to_class):
     weights = weights/weights.sum()#*10
 
     return weights
+

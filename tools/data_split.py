@@ -70,12 +70,12 @@ def mkdir(*path):
 
 if __name__ == "__main__":
 
-    train_ratio = 0.8
+    train_ratio = 0.5
     val_ratio = 0.1
-    test_ratio = 0.1
+    test_ratio = 0.4
 
-    image_root_folder = "/data/data/age_data/big_pic"
-    dest_folder = "/data/data/age_data/data_split"
+    image_root_folder = "/data/lulei/data/vehicle/frontal_103/images"
+    dest_folder = "/data/lulei/data/vehicle/frontal_103/split"
 
     data_split(image_root_folder, 
                dest_folder, 
