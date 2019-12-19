@@ -36,7 +36,7 @@ def mean_prec(y_true, y_pred):
     per_class_prec = []
     for label in unique_label:
         index = np.where(y_pred == label)
-        if len(index) == 0:
+        if len(index[0]) == 0:
             per_class_prec.append(0)
             continue
         per_class_prec.append(np.mean(y_true[index] == y_pred[index]))

@@ -21,7 +21,7 @@ os.system("clear")
 ################## 00 variable  Assignment ################################
 
 # Height and width of the CNN input image
-img_h, img_w = 180,180
+img_h, img_w = 227, 227
 
 # Set train and valid directory paths
 dataset_dir = "/data/lulei/data/vehicle/frontal_103/split"
@@ -45,7 +45,7 @@ image_transforms = {
                 # transfer the input image into gray scale
                 #transforms.Grayscale(num_output_channels=1),
                 # resize the input image into the predefined scale
-                #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC), # (h, w)
+                transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC), # (h, w)
                 # random choose one of the predefined transforms (in the list) when performing the training process
                 #transforms.RandomChoice([transforms.RandomHorizontalFlip(),
                 #                        transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3)]),
@@ -57,7 +57,7 @@ image_transforms = {
             # transforms for the valid images
             'valid': transforms.Compose([
                 #transforms.Grayscale(num_output_channels=1),
-                #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
+                transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
                 #transforms.Lambda(lambda img : pad_img(img, img_w)),
                 transforms.ToTensor(),
                                         ]),
@@ -65,7 +65,7 @@ image_transforms = {
             # transforms for the test images
             'test': transforms.Compose([
                 #transforms.Grayscale(num_output_channels=1),
-                #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
+                transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
                 #transforms.Lambda(lambda img : pad_img(img, img_w)),
                 transforms.ToTensor(),
                                        ])
@@ -95,26 +95,26 @@ dataloaders = {
         "train": DataLoader(data['train'], 
                             batch_size=batch_size, 
                             shuffle=True,
-                            num_workers= cpu_count()),
+                            num_workers= cpu_count()//2),
 
         "valid": DataLoader(data['valid'], 
                             batch_size=batch_size, 
                             shuffle=True,
-                            num_workers= cpu_count()),
+                            num_workers= cpu_count()//2),
 
         "test":  DataLoader(data['test'],
                             batch_size=batch_size, 
                             shuffle=True,
-                            num_workers= cpu_count())
+                            num_workers= cpu_count()//2)
             }
 
 
 ############ 004 get the weights of each classes ############
 
 class_to_index = data["train"].class_to_idx
-print("[INFO] class to index : ",class_to_index)
+if len(class_to_index) <= 20: print("[INFO] class to index : ",class_to_index)
 
-class_weights = get_class_weights(train_data_dir, class_to_index, idx_first = False)
+class_weights = get_class_weights(train_data_dir, class_to_index, idx_first = False)*10
 print("[INFO] class weights : ", class_weights)
 
 ############# 005 show the image quantity in each set ##########

@@ -1,4 +1,5 @@
 import os
+import copy
 import time
 import torch
 import datetime
@@ -24,131 +25,77 @@ def select_device(force_cpu=False):
     print('Using %s %s\n' % (device.type, torch.cuda.get_device_properties(0) if cuda else ''))
     return device
 
-def train_and_validate(model, train_data_loader, valid_data_loader, device,  loss_criterion, optimizer, epochs=25, save_dir = "./output_models", save_name="age"):
-    '''
-    Function to train and validate
-    Parameters
-        :param model: Model to train and validate
-        :param loss_criterion: Loss Criterion to minimize
-        :param optimizer: Optimizer for computing gradients
-        :param epochs: Number of epochs (default=25)
-  
-    Returns
-        model: Trained Model with best validation accuracy
-        history: (dict object): Having training loss, accuracy and validation loss, accuracy
-    '''
+def train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=25, save_dir = "./", prefix = "model"):
+    since = time.time()
     
-    start = time.time()
-    history = []
+    best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
-
-    train_data_size = len(train_data_loader.dataset)
-    valid_data_size = len(valid_data_loader.dataset)
-
-    for epoch in range(1, epochs + 1):
-        epoch_train_start = time.time()
-        
-        # Set to training mode
-        model.train()
-        
-        # Loss and Accuracy within the epoch
-        train_loss = 0.0
-        train_acc = 0.0
-        
-        valid_loss = 0.0
-        valid_acc = 0.0
-        
-        for i, (inputs, labels) in enumerate(train_data_loader):
-
-            inputs = inputs.to(device)
-            labels = labels.to(device)
-            
-            # Clean existing gradients
-            optimizer.zero_grad()
-            
-            # Forward pass - compute outputs on input data using the model
-            outputs = model(inputs)
-            
-            # Compute loss
-            loss = loss_criterion(outputs, labels,)
-            
-            # Backpropagate the gradients
-            loss.backward()
-            
-            # Update the parameters
-            optimizer.step()
-            
-            # Compute the total loss for the batch and add it to train_loss
-            train_loss += loss.item() * inputs.size(0)
-            
-            # Compute the accuracy
-            ret, predictions = torch.max(outputs.data, 1)
-            correct_counts = predictions.eq(labels.data.view_as(predictions))
-
-            # correct = (predictions == labels).sum().float()
-            # print(correct_counts, correct, type(correct_counts), type(correct))
-
-            # Convert correct_counts to float and then compute the mean
-            acc = torch.mean(correct_counts.type(torch.FloatTensor))
-            
-            # Compute total accuracy in the whole batch and add to train_acc
-            train_acc += acc.item() * inputs.size(0)
-            
-            #print("Batch number: {:03d}, Training: Loss: {:.4f}, Accuracy: {:.4f}".format(i, loss.item(), acc.item()))
-
-        epoch_valid_start = time.time()
-        # Validation - No gradient tracking needed
-        with torch.no_grad():
-
-            # Set to evaluation mode
-            model.eval()
-
-            # Validation loop
-            for j, (inputs, labels) in enumerate(valid_data_loader):
-                inputs = inputs.to(device)
-                labels = labels.to(device)
-
-                # Forward pass - compute outputs on input data using the model
-                outputs = model(inputs)
-
-                # Compute loss
-                loss = loss_criterion(outputs, labels)
-
-                # Compute the total loss for the batch and add it to valid_loss
-                valid_loss += loss.item() * inputs.size(0)
-
-                # Calculate validation accuracy
-                ret, predictions = torch.max(outputs.data, 1)
-                
-                correct_counts = predictions.eq(labels.data.view_as(predictions))
-
-                # Convert correct_counts to float and then compute the mean
-                acc = torch.mean(correct_counts.type(torch.FloatTensor))
-
-                # Compute total accuracy in the whole batch and add to valid_acc
-                valid_acc += acc.item() * inputs.size(0)
-
-                #print("Validation Batch number: {:03d}, Validation: Loss: {:.4f}, Accuracy: {:.4f}".format(j, loss.item(), acc.item()))
-            
-        # Find average training loss and training accuracy
-        avg_train_loss = train_loss/train_data_size 
-        avg_train_acc = train_acc/train_data_size
-
-        # Find average training loss and training accuracy
-        avg_valid_loss = valid_loss/valid_data_size 
-        avg_valid_acc = valid_acc/valid_data_size
-
-        history.append([avg_train_loss, avg_valid_loss, avg_train_acc, avg_valid_acc])
-                
-        epoch_end = time.time()
     
-        print("Epoch : {:d}/{:d}, Train : Loss: {:.4f}, Acc: {:.2f}%, Time: {:.2f}s".format(epoch, epochs, avg_train_loss, avg_train_acc*100, epoch_valid_start - epoch_train_start ), end= " | ")
-        print("Valid : Loss: {:.4f}, Acc: {:.2f}%, Time: {:.2f}s".format(avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_valid_start))
-        
-        # Save if the model has best accuracy till now
-        torch.save(model, os.path.join(save_dir, save_name + "_" + str(epoch) + "_" + time_stamp() + '.pt'))
-            
-    return model, history
+    for epoch in range(1, num_epochs + 1):
+    
+        print("Epoch {}/{}".format(epoch, num_epochs))
+        print("-" * 10)
+    
+        # Each epoch has a training and validation phase
+        for phase in ["train", "valid"]:
+            if phase == "train":
+                model.train() # Set model to training mode
+            else:
+                model.eval()  # Set model to evaluate mode
+    
+            start_time = time.time()
+            running_loss = 0.0
+            running_corrects = 0
+    
+            # Iterate over data
+            for inputs, labels in dataloaders[phase]:
+                inputs = inputs.cuda(device = 0)
+                labels = labels.cuda(device = 0)
+    
+                # zero the parameter gradients
+                optimizer.zero_grad()
+    
+                # forward
+                # track history if only in train
+                with torch.set_grad_enabled(phase == "train"):
+                    outputs = model(inputs)
+                    _, preds = torch.max(outputs, 1)
+                    loss = criterion(outputs, labels)
+    
+                    # backward + optimize only if in training phase
+                    if phase == "train":
+                        loss.backward()
+                        optimizer.step()
+    
+                # statistics
+                running_loss += loss.item() * inputs.size(0)
+                running_corrects += torch.sum(preds == labels.data)
+    
+            if phase == "train":
+                scheduler.step()
+    
+            epoch_loss = running_loss / len(dataloaders[phase].dataset)
+            epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
+    
+            duration = time.time() - start_time
+            print("{} Loss: {:.4f} | Acc: {:.4f} | Time elapsed: {:.0f}m {:.0f}s".format(
+                   phase, epoch_loss, epoch_acc, duration // 60, duration % 60))
+    
+            # deep copy the model
+            if phase == "valid" and epoch_acc > best_acc:
+                best_acc = epoch_acc
+                best_model_wts = copy.deepcopy(model.state_dict())
+                torch.save(best_model_wts,
+                           os.path.join(save_dir, "_".join([prefix, str(epoch), time_stamp()]) + '.pth'))
+    
+        print()
+    
+    time_elapsed = time.time() - since
+    print("Training complete in {:.0f}m {:.0f}s".format(
+           time_elapsed // 60, time_elapsed %60))
+    print("Best val Acc: {:4f}".format(best_acc))
+
+
 
 
 def computeTestSetAccuracy(model, loss_criterion):
