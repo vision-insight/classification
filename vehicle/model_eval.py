@@ -3,47 +3,30 @@ import sys
 import  numpy as np
 from tqdm import tqdm
 from data_prepare import *
-from sklearn import metrics
+from sklearn.metrics import accuracy_score
 import collections
 from torch import nn
 
 base_path = "/data/lulei/classification"
 sys.path.insert(0, base_path)
 from tools.metrics import *
+from tools.utils.model_zoo import MODELS
 
 
 ########### 00 load the model #####################################
 #weights_file = "./output_models/vehicle_resnet50_21_20191219_001108.pth"
-weights_file = "./output_models/vehicle_resnet18_27_20191218_164439.pth"
-
-def load_model_from_wts(model_struc, weights, gpu_id = [0]):
-    wts = torch.load(weights)
-    if isinstance(wts, collections.OrderedDict):
-        try:
-            model_struc.load_state_dict(wts)
-            # Convert model to be used on device
-            model = nn.DataParallel(model_struc, device_ids = gpu_id )
-            model = model.cuda(device = 0)
-        except Exception as e:
-            if "module" in str(e):
-                model = nn.DataParallel(model_struc)
-                model.load_state_dict(wts)
-                model = model.cuda(device = 0)
-    else:
-        raise Exception("Invalid weight file", weights) 
-
-    return model
-
+#weights_file = "./output_models/vehicle_resnet18_27_20191218_164439.pth"
+#weights_file = "./output_models/vehicle_alexnet_99_20191220_021124.pth"
+weights_file = "./output_models/vehicle_resnet50_0.9182_49_best_20191224_142352.pth"
 
 ############ 01 model define #################################
-model_struc = models.resnet18(pretrained=False)
-model_struc.fc = nn.Linear(in_features=model_struc.fc.in_features,\
-                                         out_features=len(class_to_index), bias=True)
+model_struc = MODELS(class_num = len(class_to_index), with_wts = False).resnet50()
+
+###########  02 load wts ############################
 model = load_model_from_wts(model_struc, weights_file, gpu_id = [0])
 
 ############ 03 testing ################################
-# Test the model
-model.eval()  # eval mode (batchnorm uses moving mean/variance instead of mini-batch mean/variance)
+model.eval() 
 with torch.no_grad():
 
     label_list = []
@@ -79,5 +62,4 @@ print('''
     mean_accuracy(label_list, pred_label_list),
     mean_prec(label_list, pred_label_list),
     mean_recall(label_list, pred_label_list))) 
-
 

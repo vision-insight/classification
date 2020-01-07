@@ -1,4 +1,5 @@
 import os
+import pathlib
 import shutil
 import random
 from PIL import Image
@@ -55,7 +56,7 @@ def data_split(image_root_folder, dest_folder = './', train_ratio = 0, val_ratio
             mkdir(dest_class_dir)
             [shutil.copy(i, dest_class_dir) for i in val_images]
 
-        if os.path.isdir(test_dir):
+        if test_ratio != 0:
             dest_class_dir = os.path.join(test_dir, class_name)
             mkdir(dest_class_dir)
             [shutil.copy(i, dest_class_dir) for i in test_images]
@@ -70,12 +71,13 @@ def mkdir(*path):
 
 if __name__ == "__main__":
 
-    train_ratio = 0.5
-    val_ratio = 0.1
-    test_ratio = 0.4
 
-    image_root_folder = "/data/lulei/data/vehicle/frontal_103/images"
-    dest_folder = "/data/lulei/data/vehicle/frontal_103/split"
+    train_ratio = 0.8
+    val_ratio = 0.2
+    test_ratio = 0
+
+    image_root_folder = "/data/lulei/data/age/version_1/big_pic"
+    dest_folder = "/data/lulei/data/age/version_1/data_split"
 
     data_split(image_root_folder, 
                dest_folder, 

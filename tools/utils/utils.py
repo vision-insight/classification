@@ -50,8 +50,9 @@ def get_class_weights(input_dir, idx_to_class, idx_first = True):
             idx, class_name = key, value
         else:
             idx, class_name = value, key
-
-        if isinstance(class_name, list):
+        print(class_name)
+        if isinstance(eval(class_name), list):
+            class_name = eval(class_name)
             temp_sum = 0
             for subclass_name in class_name:
                 temp_num = len([i for i in pathlib.Path(os.path.join(input_dir, subclass_name)).rglob("*.jpg")])

@@ -12,9 +12,7 @@ base_path = "/data/lulei/classification"
 sys.path.insert(0, base_path)
 from tools.utils.torch_utils import *
 from tools.utils.utils import *
-#from tools.utils.ImageFolder import ImageFolder
 from torchvision.datasets import ImageFolder
-
 os.system("clear")
 
 
@@ -98,12 +96,12 @@ dataloaders = {
                             num_workers= cpu_count()//2),
 
         "valid": DataLoader(data['valid'], 
-                            batch_size=batch_size, 
+                            batch_size=batch_size*2, 
                             shuffle=True,
                             num_workers= cpu_count()//2),
 
         "test":  DataLoader(data['test'],
-                            batch_size=batch_size, 
+                            batch_size=batch_size*2, 
                             shuffle=True,
                             num_workers= cpu_count()//2)
             }

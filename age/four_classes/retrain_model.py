@@ -1,63 +1,55 @@
-
-## refered to https://github.com/spmallick/learnopencv/blob/master/Image-Classification-in-PyTorch/image_classification_using_transfer_learning_in_pytorch.ipynb
-## https://github.com/spmallick/learnopencv/blob/master/Image-classification-pre-trained-models/Image_Classification_using_pre_trained_models.ipynb
-import os
-import torch, torchvision
-from torchvision import datasets, models, transforms
+import torch
+import collections
 import torch.nn as nn
-import torch.optim as optim
-import time
-from torchsummary import summary
-import numpy as np
-import matplotlib.pyplot as plt
-import os
-from utils.torch_utils import *
 from data_prepare import *
+import torch.optim as optim
+from torchvision import datasets, models, transforms
 
-from PIL import Image
+weights_file = "./output_models/age_resnet_77_20191213_142153.pth"
 
 
-# Load pretrained ResNet50 Model
-model = models.resnet18(pretrained=True)
 
-# Freeze model parameters (for transfer learning)
-#for param in model.parameters():
-#    param.requires_grad = False
+model = torch.load(weights_file)
+print(type(model))
+#class_num = model["fc.3.weight"].shape[0]
+if isinstance(model, collections.OrderedDict):
+    # define the network
+    model_structure = models.resnet18(pretrained=False)
 
-# Change the first conv layer to adapt single channel input
-# print(resnet50.modules)
+    fc_inputs = model_structure.fc.in_features
+    model_structure.fc = nn.Sequential(
+                         nn.Linear(fc_inputs, 512),
+                         nn.ReLU(),
+                         nn.Dropout(0.5),
+                         nn.Linear(512, len(idx_and_class)), # Since 10 possible outputs
+                         nn.LogSoftmax(dim=1) # For using NLLLoss()
+                         )
+    model_structure.load_state_dict(model) 
+    model = model_structure
+    # Convert model to be used on device
+    model = nn.DataParallel(model, device_ids = [0,1] )
+    model = model.cuda(device = 0)
 
-#w = model.conv1.weight
-#model.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
-#model.conv1.weight = torch.nn.Parameter(w[:, :1, :, :])
+elif isinstance(model, torch.nn.parallel.data_parallel.DataParallel):
+    pass
 
-# Change the final layer of ResNet50 Model for Transfer Learning
-fc_inputs = model.fc.in_features
-print(fc_inputs)
-model.fc = nn.Sequential(
-    nn.Linear(fc_inputs, 512),
-    nn.ReLU(),
-    nn.Dropout(0.5),
-    nn.Linear(512, len(class_to_index)), # Since 10 possible outputs
-    nn.LogSoftmax(dim=1) # For using NLLLoss()
-)
+#print(type(model))
 
-# Convert model to be used on device
-model = model.to(device)
-model = nn.DataParallel(model)
-# Define Optimizer and Loss Function
 loss_func = nn.NLLLoss(weight=class_weights.cuda(), reduction='sum')
 
 optimizer = optim.Adam(model.parameters())
 
 
 
+
 ## model training #####################################
 epochs = 100
+start_num = 50
 save_dir = "./output_models"
-save_name = "age_resnet"
+prefix = "age_resnet"
 save_model = True
 save_thre = 20
+save_type = "full_model" #"full_model" # weights_only
 
 
 start = time.time()
@@ -67,7 +59,7 @@ best_acc = 0.0
 train_data_size = len(train_data_loader.dataset)
 valid_data_size = len(valid_data_loader.dataset)
 
-for epoch in range(1, epochs + 1):
+for epoch in range(start_num, epochs + 1):
     epoch_train_start = time.time()
 
     # Set to training mode
@@ -82,8 +74,8 @@ for epoch in range(1, epochs + 1):
 
     for i, (inputs, labels) in enumerate(train_data_loader):
 
-        inputs = inputs.to(device)
-        labels = labels.to(device)
+        inputs = inputs.cuda(device = 0)
+        labels = labels.cuda(device = 0)
 
         # Clean existing gradients
         optimizer.zero_grad()
@@ -96,7 +88,7 @@ for epoch in range(1, epochs + 1):
 
         # Backpropagate the gradients
         loss.backward()
-            
+
         # Update the parameters
         optimizer.step()
 
@@ -126,8 +118,8 @@ for epoch in range(1, epochs + 1):
 
         # Validation loop
         for j, (inputs, labels) in enumerate(valid_data_loader):
-            inputs = inputs.to(device)
-            labels = labels.to(device)
+            inputs = inputs.cuda(device = 0)
+            labels = labels.cuda(device = 0)
 
             # Forward pass - compute outputs on input data using the model
             outputs = model(inputs)
@@ -169,46 +161,14 @@ for epoch in range(1, epochs + 1):
 
     # Save if the model has best accuracy till now
     if save_model and (epoch >= save_thre):
-        torch.save(model.module.state_dict(), os.path.join(save_dir, \
-                save_name + "_" + str(epoch) + "_" + time_stamp() + '.pth'))
+        file_path = os.path.join(save_dir, \
+                                 "_".join([prefix, str(epoch), time_stamp()]) + '.pth')
+        if save_type == "full_model":
+            torch.save(model, file_path)
+        elif save_type == "weights_only":
+            torch.save(model.module.state_dict(), file_path)
+        else:
+            print("[INFO] invalid save type, unable to save the model")
 
 
-
-
-
-
-
-#trained_model, history = train_and_validate(resnet,
-#                                            train_data_loader,
-#                                            valid_data_loader,
-#                                            device,
-#                                            loss_func,
-#                                            optimizer,
-#                                            epochs=num_epochs,
-#                                            save_dir = "./output_models",
-#                                            save_name = "age")
-
-
-history = np.array(history)
-plt.plot(history[:,0:2])
-plt.legend(['Tr Loss', 'Val Loss'])
-plt.xlabel('Epoch Number')
-plt.ylabel('Loss')
-plt.ylim(0,1)
-plt.savefig( save_name + '_loss_curve.png')
-plt.show()
-
-
-
-plt.plot(history[:,2:4])
-plt.legend(['Tr Accuracy', 'Val Accuracy'])
-plt.xlabel('Epoch Number')
-plt.ylabel('Accuracy')
-plt.ylim(0,1)
-plt.savefig( save_name + '_accuracy_curve.png')
-plt.show()
-
-
-# Print the model to be trained
-#summary(resnet50, input_size=(3, 224, 224), batch_size=bs, device='cuda')
 
