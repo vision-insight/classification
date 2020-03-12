@@ -21,7 +21,6 @@ sys.path.insert(0, base_path)
 from tools.utils.model_zoo import MODELS
 
 
-
 ###################### 00  model defination ###################################
 model = MODELS(with_wts = True, class_num = 2).resnet18()
 

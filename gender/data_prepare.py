@@ -28,7 +28,6 @@ dataset_dir = "/media/D/lulei/data/gender/split"
 batch_size = 128
 print("[INFO] batch size : ", batch_size)
 
-
 train_data_dir= os.path.join(dataset_dir, 'train')
 valid_data_dir = os.path.join(dataset_dir, 'valid')
 test_data_dir = os.path.join(dataset_dir, 'test')

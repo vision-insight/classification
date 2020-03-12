@@ -58,8 +58,8 @@ print('''
     mean     acc : %.4f
     mean    prec : %.4f
     mean  recall : %.4f '''  %
-    (overall_accuracy(label_list, pred_label_list), #overall_recall(label_list, pred_label_list),
-    mean_accuracy(label_list, pred_label_list),
-    mean_prec(label_list, pred_label_list),
-    mean_recall(label_list, pred_label_list))) 
+    (overall_accuracy(label_list, pred_label_list), 
+     mean_accuracy(label_list, pred_label_list),
+     mean_prec(label_list, pred_label_list),
+     mean_recall(label_list, pred_label_list))) 
 
