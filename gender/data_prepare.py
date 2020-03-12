@@ -8,7 +8,7 @@ import PIL
 from PIL import Image
 from multiprocessing import cpu_count
 
-base_path = "/data/lulei/classification"
+base_path = "/media/D/lulei/classification"
 sys.path.insert(0, base_path)
 from tools.utils.torch_utils import *
 from tools.utils.utils import *
@@ -22,7 +22,7 @@ os.system("clear")
 img_h, img_w = 227, 227
 
 # Set train and valid directory paths
-dataset_dir = "/data/lulei/data/vehicle/frontal_103/split"
+dataset_dir = "/media/D/lulei/data/gender/split"
 
 # Batch size
 batch_size = 128
@@ -80,7 +80,6 @@ data = {
                              transform=image_transforms['valid'],
                              target_transform=None),
 
-
         'test': ImageFolder(root=test_data_dir, 
                             transform=image_transforms['test'],
                             target_transform=None)
@@ -120,7 +119,6 @@ for data_type in ["train", "valid", "test"]:
     temp_1 = len(data[data_type])
     print("[INFO] image for %s : %d" % (data_type, temp_1))
         
-
 
 if __name__ == "__main__":
     pass
