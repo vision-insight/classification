@@ -4,6 +4,7 @@ import shutil
 import random
 from PIL import Image
 import torch
+import numpy as np
 
 def pad_img(image, long_side):
     '''
@@ -24,7 +25,32 @@ def pad_img(image, long_side):
 
     return new_image
 
+def centralize(img,rw_ratio,lw_ratio,up_ratio,down_ratio):
+    
+    iw, ih = img.size
+    center_x = iw / 2
+    center_y = ih / 2
+    rw = int(rw_ratio*iw)
+    lw = int(lw_ratio*iw)
+    up_h = int(up_ratio*ih)
+    down_h = int(down_ratio*ih)
 
+    new_img= img.crop(
+    (
+        center_x - lw ,
+        center_y - up_h,
+        center_x + rw,
+        center_y + down_h
+    )
+    )
+    return new_img
+
+def verticalize(img):
+    w, h = img.size
+    if w > h:
+        return img.rotate(90,expand = 1)
+    else:
+        return img
 
 def get_class_weights(input_dir, idx_to_class, idx_first = True):
     '''

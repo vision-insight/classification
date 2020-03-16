@@ -94,6 +94,8 @@ def train_model(model, dataloaders, criterion, optimizer,\
         print()
     
     time_elapsed = time.time() - since
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
     torch.save(best_model_wts, \
                     os.path.join(save_dir, "_".join([prefix, "%.4f" % best_acc,  str(best_epoch), "best", time_stamp()]) + '.pth'))
     

@@ -19,13 +19,13 @@ os.system("clear")
 ################## 00 variable  Assignment ################################
 
 # Height and width of the CNN input image
-img_h, img_w = 227, 227
+img_h, img_w = 227,320
 
 # Set train and valid directory paths
 dataset_dir = "/media/D/lulei/data/gender/split"
 
 # Batch size
-batch_size = 128
+batch_size = 100
 print("[INFO] batch size : ", batch_size)
 
 train_data_dir= os.path.join(dataset_dir, 'train')
@@ -40,26 +40,30 @@ image_trans = {
         # transfer the input image into gray scale
         #transforms.Grayscale(num_output_channels=1),
         # resize the input image into the predefined scale
-        transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC), # (h, w)
+        #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC), # (h, w)
         # random choose one of the predefined transforms (in the list) when performing the training process
         # transforms.RandomChoice([transforms.RandomHorizontalFlip(),
         # transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3)]),
-        #transforms.Lambda(lambda img : pad_img(img, img_w)),
+        transforms.Lambda(lambda img : verticalize(img)),
+        transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.4,0.4)),
+        transforms.Lambda(lambda img : pad_img(img, img_w)),
         # transfer the type of input image into tensor style
         transforms.ToTensor(),
                                 ]),
 
     'valid': transforms.Compose([
         #transforms.Grayscale(num_output_channels=1),
-        transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
-        #transforms.Lambda(lambda img : pad_img(img, img_w)),
+        #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
+        transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.4,0.4)),
+        transforms.Lambda(lambda img : pad_img(img, img_w)),
         transforms.ToTensor(),
                                 ]),
 
     'test': transforms.Compose([
         #transforms.Grayscale(num_output_channels=1),
-        transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
-        #transforms.Lambda(lambda img : pad_img(img, img_w)),
+        #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
+        transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.4,0.4)),
+        transforms.Lambda(lambda img : pad_img(img, img_w)),
         transforms.ToTensor(),
                                ])
              }
@@ -86,17 +90,17 @@ dataloaders = {
     "train": DataLoader(data['train'], 
                         batch_size=batch_size, 
                         shuffle=True,
-                        num_workers= cpu_count()//2),
+                        num_workers= cpu_count()//4*3),
 
     "valid": DataLoader(data['valid'], 
                         batch_size=batch_size*2, 
                         shuffle=True,
-                        num_workers= cpu_count()//2),
+                        num_workers= cpu_count()//4*3),
 
     "test":  DataLoader(data['test'],
                         batch_size=batch_size*2, 
                         shuffle=True,
-                        num_workers= cpu_count()//2)
+                        num_workers= cpu_count()//4*3)
               }
 
 ############ 004 get the weights of each classes ############

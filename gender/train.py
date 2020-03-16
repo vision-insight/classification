@@ -39,7 +39,7 @@ scheduler = exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=10, gamm
 
 #####################  02  model training #####################################
 num_epochs = 20
-save_dir = "./gender/output_models"
+save_dir = "./output_models"
 save_name = "gender_res18"
 
 

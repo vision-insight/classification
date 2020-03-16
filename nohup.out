@@ -1,0 +1,404 @@
+Unable to init server: Could not connect: Connection refused
+Unable to init server: Could not connect: Connection refused
+
+(train.py:6755): Gdk-CRITICAL **: 18:09:49.606: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+[3J[H[2J[INFO] batch size :  128
+[INFO] class to index :  {'female': 0, 'male': 1}
+[INFO] class weights :  tensor([4.4830, 5.5170])
+[INFO] image for train : 45760
+[INFO] image for valid : 9152
+[INFO] image for test : 36539
+Epoch 1/50
+----------
+train Loss: 66150.1491 | Acc: 0.5161 | Time elapsed: 1m 23s
+valid Loss: 17651.9885 | Acc: 0.5587 | Time elapsed: 0m 28s
+
+Epoch 2/50
+----------
+train Loss: 924.0671 | Acc: 0.5100 | Time elapsed: 1m 24s
+valid Loss: 1925.1834 | Acc: 0.5544 | Time elapsed: 0m 9s
+
+Epoch 3/50
+----------
+train Loss: 906.1613 | Acc: 0.5123 | Time elapsed: 1m 24s
+valid Loss: 4473.2895 | Acc: 0.4493 | Time elapsed: 0m 9s
+
+Epoch 4/50
+----------
+train Loss: 1038.3561 | Acc: 0.5120 | Time elapsed: 1m 24s
+valid Loss: 891.7491 | Acc: 0.5075 | Time elapsed: 0m 9s
+
+Epoch 5/50
+----------
+train Loss: 593.3785 | Acc: 0.5201 | Time elapsed: 1m 24s
+valid Loss: 1041.7010 | Acc: 0.5673 | Time elapsed: 0m 9s
+
+Epoch 6/50
+----------
+train Loss: 840.2540 | Acc: 0.5162 | Time elapsed: 1m 24s
+valid Loss: 1085.1472 | Acc: 0.5579 | Time elapsed: 0m 9s
+
+Epoch 7/50
+----------
+train Loss: 619.1381 | Acc: 0.5256 | Time elapsed: 1m 24s
+valid Loss: 1311.9646 | Acc: 0.5539 | Time elapsed: 0m 9s
+
+Epoch 8/50
+----------
+train Loss: 597.9730 | Acc: 0.5298 | Time elapsed: 1m 24s
+valid Loss: 863.8710 | Acc: 0.5381 | Time elapsed: 0m 9s
+
+Epoch 9/50
+----------
+train Loss: 625.8389 | Acc: 0.5271 | Time elapsed: 1m 24s
+valid Loss: 1270.9691 | Acc: 0.4644 | Time elapsed: 0m 9s
+
+Epoch 10/50
+----------
+train Loss: 573.5026 | Acc: 0.5326 | Time elapsed: 1m 24s
+valid Loss: 1538.6627 | Acc: 0.4696 | Time elapsed: 0m 9s
+
+Epoch 11/50
+----------
+train Loss: 428.9886 | Acc: 0.5794 | Time elapsed: 1m 24s
+valid Loss: 847.3856 | Acc: 0.5982 | Time elapsed: 0m 9s
+
+Epoch 12/50
+----------
+train Loss: 424.1077 | Acc: 0.5841 | Time elapsed: 1m 24s
+valid Loss: 834.1760 | Acc: 0.6087 | Time elapsed: 0m 9s
+
+Epoch 13/50
+----------
+train Loss: 419.6601 | Acc: 0.5908 | Time elapsed: 1m 24s
+valid Loss: 863.8852 | Acc: 0.5271 | Time elapsed: 0m 9s
+
+Epoch 14/50
+----------
+train Loss: 419.0127 | Acc: 0.5938 | Time elapsed: 1m 24s
+valid Loss: 832.6983 | Acc: 0.6065 | Time elapsed: 0m 9s
+
+Epoch 15/50
+----------
+train Loss: 419.0471 | Acc: 0.5962 | Time elapsed: 1m 24s
+valid Loss: 840.2823 | Acc: 0.5528 | Time elapsed: 0m 9s
+
+Epoch 16/50
+----------
+train Loss: 417.1970 | Acc: 0.5962 | Time elapsed: 1m 24s
+valid Loss: 828.8258 | Acc: 0.6158 | Time elapsed: 0m 9s
+
+Epoch 17/50
+----------
+train Loss: 417.3087 | Acc: 0.5999 | Time elapsed: 1m 24s
+valid Loss: 820.2236 | Acc: 0.6204 | Time elapsed: 0m 9s
+
+Epoch 18/50
+----------
+train Loss: 415.9962 | Acc: 0.6034 | Time elapsed: 1m 24s
+valid Loss: 818.7826 | Acc: 0.6153 | Time elapsed: 0m 9s
+
+Epoch 19/50
+----------
+train Loss: 416.8521 | Acc: 0.6000 | Time elapsed: 1m 24s
+valid Loss: 817.6656 | Acc: 0.6184 | Time elapsed: 0m 9s
+
+Epoch 20/50
+----------
+train Loss: 416.0248 | Acc: 0.6022 | Time elapsed: 1m 24s
+valid Loss: 817.4783 | Acc: 0.6262 | Time elapsed: 0m 9s
+
+Epoch 21/50
+----------
+train Loss: 411.2407 | Acc: 0.6210 | Time elapsed: 1m 24s
+valid Loss: 817.1032 | Acc: 0.6000 | Time elapsed: 0m 9s
+
+Epoch 22/50
+----------
+train Loss: 410.9920 | Acc: 0.6177 | Time elapsed: 1m 24s
+valid Loss: 816.1364 | Acc: 0.6212 | Time elapsed: 0m 9s
+
+Epoch 23/50
+----------
+train Loss: 410.4749 | Acc: 0.6197 | Time elapsed: 1m 24s
+valid Loss: 815.8321 | Acc: 0.6231 | Time elapsed: 0m 9s
+
+Epoch 24/50
+----------
+train Loss: 418.6068 | Acc: 0.6230 | Time elapsed: 1m 24s
+valid Loss: 815.9699 | Acc: 0.6087 | Time elapsed: 0m 9s
+
+Epoch 25/50
+----------
+train Loss: 410.9999 | Acc: 0.6191 | Time elapsed: 1m 24s
+valid Loss: 815.0311 | Acc: 0.6237 | Time elapsed: 0m 9s
+
+Epoch 26/50
+----------
+train Loss: 426.7416 | Acc: 0.6206 | Time elapsed: 1m 24s
+valid Loss: 815.4968 | Acc: 0.6215 | Time elapsed: 0m 9s
+
+Epoch 27/50
+----------
+train Loss: 409.5226 | Acc: 0.6242 | Time elapsed: 1m 24s
+valid Loss: 813.2428 | Acc: 0.6237 | Time elapsed: 0m 9s
+
+Epoch 28/50
+----------
+train Loss: 410.1451 | Acc: 0.6189 | Time elapsed: 1m 24s
+valid Loss: 818.1016 | Acc: 0.6248 | Time elapsed: 0m 9s
+
+Epoch 29/50
+----------
+train Loss: 410.4161 | Acc: 0.6222 | Time elapsed: 1m 24s
+valid Loss: 815.2342 | Acc: 0.6249 | Time elapsed: 0m 9s
+
+Epoch 30/50
+----------
+train Loss: 410.4733 | Acc: 0.6228 | Time elapsed: 1m 24s
+valid Loss: 814.2704 | Acc: 0.6132 | Time elapsed: 0m 9s
+
+Epoch 31/50
+----------
+train Loss: 409.7018 | Acc: 0.6253 | Time elapsed: 1m 24s
+valid Loss: 812.9715 | Acc: 0.6271 | Time elapsed: 0m 9s
+
+Epoch 32/50
+----------
+train Loss: 409.1546 | Acc: 0.6263 | Time elapsed: 1m 24s
+valid Loss: 813.9091 | Acc: 0.6245 | Time elapsed: 0m 9s
+
+Epoch 33/50
+----------
+train Loss: 410.8641 | Acc: 0.6261 | Time elapsed: 1m 24s
+valid Loss: 813.5413 | Acc: 0.6247 | Time elapsed: 0m 9s
+
+Epoch 34/50
+----------
+train Loss: 409.1940 | Acc: 0.6270 | Time elapsed: 1m 24s
+valid Loss: 813.2852 | Acc: 0.6234 | Time elapsed: 0m 9s
+
+Epoch 35/50
+----------
+train Loss: 409.6498 | Acc: 0.6271 | Time elapsed: 1m 24s
+valid Loss: 815.3172 | Acc: 0.6235 | Time elapsed: 0m 9s
+
+Epoch 36/50
+----------
+train Loss: 408.9932 | Acc: 0.6265 | Time elapsed: 1m 24s
+valid Loss: 814.3600 | Acc: 0.6246 | Time elapsed: 0m 9s
+
+Epoch 37/50
+----------
+train Loss: 409.2790 | Acc: 0.6283 | Time elapsed: 1m 24s
+valid Loss: 813.7750 | Acc: 0.6236 | Time elapsed: 0m 9s
+
+Epoch 38/50
+----------
+train Loss: 409.1513 | Acc: 0.6285 | Time elapsed: 1m 24s
+valid Loss: 813.8562 | Acc: 0.6243 | Time elapsed: 0m 9s
+
+Epoch 39/50
+----------
+train Loss: 408.9138 | Acc: 0.6274 | Time elapsed: 1m 24s
+valid Loss: 813.2233 | Acc: 0.6212 | Time elapsed: 0m 9s
+
+Epoch 40/50
+----------
+train Loss: 409.2726 | Acc: 0.6278 | Time elapsed: 1m 24s
+valid Loss: 813.1697 | Acc: 0.6249 | Time elapsed: 0m 9s
+
+Epoch 41/50
+----------
+train Loss: 409.5880 | Acc: 0.6290 | Time elapsed: 1m 24s
+valid Loss: 814.0378 | Acc: 0.6248 | Time elapsed: 0m 9s
+
+Epoch 42/50
+----------
+train Loss: 412.4176 | Acc: 0.6280 | Time elapsed: 1m 24s
+valid Loss: 814.0260 | Acc: 0.6223 | Time elapsed: 0m 9s
+
+Epoch 43/50
+----------
+train Loss: 409.3816 | Acc: 0.6267 | Time elapsed: 1m 24s
+valid Loss: 813.5077 | Acc: 0.6236 | Time elapsed: 0m 9s
+
+Epoch 44/50
+----------
+train Loss: 409.3851 | Acc: 0.6286 | Time elapsed: 1m 24s
+valid Loss: 814.9980 | Acc: 0.6234 | Time elapsed: 0m 9s
+
+Epoch 45/50
+----------
+train Loss: 409.3149 | Acc: 0.6285 | Time elapsed: 1m 24s
+valid Loss: 813.1598 | Acc: 0.6266 | Time elapsed: 0m 9s
+
+Epoch 46/50
+----------
+train Loss: 409.3076 | Acc: 0.6280 | Time elapsed: 1m 24s
+valid Loss: 814.5958 | Acc: 0.6223 | Time elapsed: 0m 9s
+
+Epoch 47/50
+----------
+train Loss: 409.2890 | Acc: 0.6288 | Time elapsed: 1m 24s
+valid Loss: 813.4703 | Acc: 0.6237 | Time elapsed: 0m 9s
+
+Epoch 48/50
+----------
+train Loss: 409.2118 | Acc: 0.6274 | Time elapsed: 1m 24s
+valid Loss: 813.8143 | Acc: 0.6255 | Time elapsed: 0m 9s
+
+Epoch 49/50
+----------
+train Loss: 409.0295 | Acc: 0.6276 | Time elapsed: 1m 24s
+valid Loss: 813.3881 | Acc: 0.6248 | Time elapsed: 0m 9s
+
+Epoch 50/50
+----------
+train Loss: 408.8176 | Acc: 0.6260 | Time elapsed: 1m 24s
+valid Loss: 814.8401 | Acc: 0.6246 | Time elapsed: 0m 9s
+
+Training complete in 77m 46s
+Best val Acc: 0.627076
+Unable to init server: Could not connect: Connection refused
+Unable to init server: Could not connect: Connection refused
+
+(train.py:29210): Gdk-CRITICAL **: 23:50:46.062: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+[3J[H[2J[INFO] batch size :  64
+[INFO] class to index :  {'female': 0, 'male': 1}
+[INFO] class weights :  tensor([4.4830, 5.5170])
+[INFO] image for train : 45760
+[INFO] image for valid : 9152
+[INFO] image for test : 36506
+Epoch 1/50
+----------
+train Loss: 34661.6487 | Acc: 0.5043 | Time elapsed: 4m 19s
+valid Loss: 611.3581 | Acc: 0.5479 | Time elapsed: 0m 17s
+
+Epoch 2/50
+----------
+train Loss: 251.6466 | Acc: 0.5082 | Time elapsed: 4m 19s
+valid Loss: 493.3080 | Acc: 0.4513 | Time elapsed: 0m 17s
+
+Epoch 3/50
+----------
+train Loss: 254.7274 | Acc: 0.5046 | Time elapsed: 4m 19s
+valid Loss: 444.4671 | Acc: 0.5499 | Time elapsed: 0m 17s
+
+Epoch 4/50
+----------
+train Loss: 253.4328 | Acc: 0.5096 | Time elapsed: 4m 19s
+valid Loss: 460.7589 | Acc: 0.5460 | Time elapsed: 0m 17s
+
+Epoch 5/50
+----------
+train Loss: 255.5494 | Acc: 0.5035 | Time elapsed: 4m 19s
+valid Loss: 509.4027 | Acc: 0.4572 | Time elapsed: 0m 17s
+
+Epoch 6/50
+----------
+train Loss: 250.2296 | Acc: 0.5116 | Time elapsed: 4m 19s
+valid Loss: 441.2439 | Acc: 0.5458 | Time elapsed: 0m 17s
+
+Epoch 7/50
+----------
+train Loss: 256.5460 | Acc: 0.5111 | Time elapsed: 4m 19s
+valid Loss: 441.9711 | Acc: 0.5497 | Time elapsed: 0m 17s
+
+Epoch 8/50
+----------
+train Loss: 253.6362 | Acc: 0.5090 | Time elapsed: 4m 19s
+valid Loss: 564.7350 | Acc: 0.5512 | Time elapsed: 0m 17s
+
+Epoch 9/50
+----------
+train Loss: 256.4429 | Acc: 0.5080 | Time elapsed: 4m 19s
+valid Loss: 516.3931 | Acc: 0.4618 | Time elapsed: 0m 17s
+
+Epoch 10/50
+----------
+train Loss: 253.0175 | Acc: 0.5127 | Time elapsed: 4m 20s
+valid Loss: 457.7347 | Acc: 0.5515 | Time elapsed: 0m 17s
+
+Epoch 11/50
+----------
+Unable to init server: Could not connect: Connection refused
+Unable to init server: Could not connect: Connection refused
+
+(train.py:30605): Gdk-CRITICAL **: 00:39:21.355: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+[3J[H[2J[INFO] batch size :  64
+[INFO] class to index :  {'female': 0, 'male': 1}
+[INFO] class weights :  tensor([4.4830, 5.5170])
+[INFO] image for train : 45760
+[INFO] image for valid : 9152
+[INFO] image for test : 36506
+Traceback (most recent call last):
+  File "gender/train.py", line 30, in <module>
+    model = model.cuda(device  = 0)
+  File "/home/dasen/.local/lib/python3.6/site-packages/torch/nn/modules/module.py", line 311, in cuda
+    return self._apply(lambda t: t.cuda(device))
+  File "/home/dasen/.local/lib/python3.6/site-packages/torch/nn/modules/module.py", line 208, in _apply
+    module._apply(fn)
+  File "/home/dasen/.local/lib/python3.6/site-packages/torch/nn/modules/module.py", line 230, in _apply
+    param_applied = fn(param)
+  File "/home/dasen/.local/lib/python3.6/site-packages/torch/nn/modules/module.py", line 311, in <lambda>
+    return self._apply(lambda t: t.cuda(device))
+RuntimeError: CUDA error: out of memory
+Unable to init server: Could not connect: Connection refused
+Unable to init server: Could not connect: Connection refused
+
+(train.py:30638): Gdk-CRITICAL **: 00:40:53.096: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+[3J[H[2J[INFO] batch size :  128
+[INFO] class to index :  {'female': 0, 'male': 1}
+[INFO] class weights :  tensor([4.4830, 5.5170])
+[INFO] image for train : 45760
+[INFO] image for valid : 9152
+[INFO] image for test : 36506
+Traceback (most recent call last):
+  File "gender/train.py", line 30, in <module>
+    model = model.cuda(device  = 0)
+  File "/home/dasen/.local/lib/python3.6/site-packages/torch/nn/modules/module.py", line 311, in cuda
+    return self._apply(lambda t: t.cuda(device))
+  File "/home/dasen/.local/lib/python3.6/site-packages/torch/nn/modules/module.py", line 208, in _apply
+    module._apply(fn)
+  File "/home/dasen/.local/lib/python3.6/site-packages/torch/nn/modules/module.py", line 230, in _apply
+    param_applied = fn(param)
+  File "/home/dasen/.local/lib/python3.6/site-packages/torch/nn/modules/module.py", line 311, in <lambda>
+    return self._apply(lambda t: t.cuda(device))
+RuntimeError: CUDA error: out of memory
+train Loss: 219.9621 | Acc: 0.5266 | Time elapsed: 4m 20s
+valid Loss: 441.3734 | Acc: 0.4996 | Time elapsed: 0m 17s
+
+Epoch 12/50
+----------
+train Loss: 219.0850 | Acc: 0.5292 | Time elapsed: 4m 20s
+valid Loss: 452.2892 | Acc: 0.4862 | Time elapsed: 0m 17s
+
+Epoch 13/50
+----------
+train Loss: 218.6436 | Acc: 0.5295 | Time elapsed: 4m 19s
+valid Loss: 438.9266 | Acc: 0.5508 | Time elapsed: 0m 17s
+
+Epoch 14/50
+----------
+train Loss: 218.7261 | Acc: 0.5276 | Time elapsed: 4m 19s
+valid Loss: 440.2636 | Acc: 0.5509 | Time elapsed: 0m 17s
+
+Epoch 15/50
+----------
+train Loss: 218.8086 | Acc: 0.5306 | Time elapsed: 4m 20s
+valid Loss: 436.2514 | Acc: 0.5312 | Time elapsed: 0m 17s
+
+Epoch 16/50
+----------
+train Loss: 218.2998 | Acc: 0.5339 | Time elapsed: 4m 20s
+valid Loss: 436.6147 | Acc: 0.5475 | Time elapsed: 0m 17s
+
+Epoch 17/50
+----------
+train Loss: 218.3301 | Acc: 0.5333 | Time elapsed: 4m 19s
+valid Loss: 440.6625 | Acc: 0.5285 | Time elapsed: 0m 17s
+
+Epoch 18/50
+----------
+train Loss: 218.2676 | Acc: 0.5310 | Time elapsed: 4m 20s
