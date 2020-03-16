@@ -44,7 +44,7 @@ image_trans = {
         # random choose one of the predefined transforms (in the list) when performing the training process
         # transforms.RandomChoice([transforms.RandomHorizontalFlip(),
         # transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3)]),
-        transforms.Lambda(lambda img : verticalize(img)),
+        #transforms.Lambda(lambda img : verticalize(img)),
         transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.4,0.4)),
         transforms.Lambda(lambda img : pad_img(img, img_w)),
         # transfer the type of input image into tensor style

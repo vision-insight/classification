@@ -38,7 +38,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
 scheduler = exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
 
 #####################  02  model training #####################################
-num_epochs = 20
+num_epochs = 2
 save_dir = "./output_models"
 save_name = "gender_res18"
 
