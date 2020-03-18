@@ -32,13 +32,13 @@ model = model.cuda(device  = 0)
 criterion = nn.CrossEntropyLoss(weight = class_weights.cuda(), reduction = "sum")
 
 # Observe that all parameters are being optimized
-optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
 # Decay LR by a factor of 0.1 every 7 epochs
-scheduler = exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
+scheduler = exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.1)
 
 #####################  02  model training #####################################
-num_epochs = 2
+num_epochs = 30
 save_dir = "./output_models"
 save_name = "gender_res18"
 

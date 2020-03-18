@@ -20,11 +20,22 @@ from tools.metrics import *
 from tools.utils.model_zoo import MODELS
 
 
+image_dir = "./input_images/"
+output_dir = "./output_images/"
+
+
+data = ImageFolder(root = image_dir,
+                   transform=image_trans["test"])
+
+dataloader = DataLoader(data,
+                        batch_size = batch_size,
+                        shuffle = True,
+                        num_workers = cpu_count()//4*3)
+
 ########### 00 load the model #####################################
-#weights_file = "./output_models/vehicle_resnet50_21_20191219_001108.pth"
-#weights_file = "./output_models/vehicle_resnet18_27_20191218_164439.pth"
-#weights_file = "./output_models/vehicle_alexnet_99_20191220_021124.pth"
-weights_file = "./gender/output_models/gender_res18_0.6271_31_best_20200313_192739.pth"
+weights_file = "./output_models/gender_res18_0.9626_30_best_20200318_110241.pt"
+#gender_retrain_res18_0.9836_29_best_20200318_103016.pt"
+#gender_res18_0.9863_30_best_20200316_144607.pt"
 
 ############ 01 model define #################################
 model_struc = MODELS(class_num = len(class_to_index), with_wts = False).resnet18()
@@ -33,57 +44,33 @@ model_struc = MODELS(class_num = len(class_to_index), with_wts = False).resnet18
 model = load_model_from_wts(model_struc, weights_file, gpu_id = [0])
 
 ############ 03 testing ################################
-model.eval()
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--input', default='./images/')
-args= parser.parse_args()
 
-for path in os.listdir(args.input):
-    #print(path)
-    imgs=cv2.imread('./images/'+path)
-    h,w = imgs.shape[0:2]
-    title_x = int(w*0.7)
-    title_y = int(h*0.1)
-    #print(type(imgs))
-    #img = torch.tensor(img)
-    img = transforms.ToTensor()(imgs).unsqueeze(0)
-    #print(img)
-    line_thickness = round(0.002 * max(img.shape[0:2]) + 1)
-    #line_thickness = 7
-    font_thickness = max(line_thickness - 1, 1)
-    #img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-    gender_result =model(img)
-    _, pred = torch.max(gender_result, 1)
-    #soft = torch.nn.functional.softmax(out, 1)
-    #sign = (pred.data.item())
-    #print(sign)
-    print(pred)
 
-    #print(pred)
-    if pred  == 0:
-        cv2.putText(imgs, 'female', (title_x,title_y), cv2.FONT_HERSHEY_TRIPLEX,line_thickness, (0,0,255), font_thickness)
-        cv2.imwrite('./gender/results/'+path+'.jpg', imgs)
-        #cv2.imwrite(save_train_path+strTime1+'.jpg',show_frame)
-    else:
-        cv2.putText(imgs, 'male', (title_x,title_y), cv2.FONT_HERSHEY_TRIPLEX,line_thickness, (0,0,255), font_thickness)
-        cv2.imwrite('./gender/results/'+path+'.jpg', imgs)
+model.eval() 
+with torch.no_grad():
 
-'''image = cv2.imread('./gender/1.jpg')
-h,w = image.shape[0:2]
-title_x = int(w*0.7)
-title_y = int(h*0.1)
-img = transforms.ToTensor()(image).unsqueeze(0)
-line_thickness = round(0.002 * max(img.shape[0:2]) + 1)
-font_thickness = max(line_thickness - 1, 1)
+    pred_label_list = []
 
-output = model(img)
-_, pred = torch.max(output, 1)
-print(pred)
-if pred == 0:
-    cv2.putText(image, 'female', (title_x,title_y), cv2.FONT_HERSHEY_TRIPLEX,line_thickness, (0,0,255), font_thickness)
-    cv2.imwrite('1-1.jpg',image)
-else:
-    cv2.putText(image, 'male', (title_x,title_y), cv2.FONT_HERSHEY_TRIPLEX,line_thickness, (0,0,255), font_thickness)
-    cv2.imwrite('1-1.jpg',image)
-'''
+    for image_path  in tqdm(pathlib.Path(image_dir).rglob("*.jpg")):
+        image = Image.open(image_path)
+        image_torch = image_trans["test"](image).unsqueeze(0).cuda(device = 0)
+        output = model(image_torch)
+        log_prob, pred_label = torch.max(output.data, 1)
+        label = index_to_class[int(pred_label.cpu())]
+        
+        image = np.asarray(image)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+
+        cv2.putText(image, f"{label}", (20,20),\
+                cv2.FONT_HERSHEY_COMPLEX, 0.8, (255, 255, 255), 2)
+        cv2.putText(image, f"{label}", (20,20), \
+                cv2.FONT_HERSHEY_COMPLEX, 0.8, (0, 0, 255), 1)
+        
+        out_dir = os.path.join(output_dir, label)
+        if not os.path.isdir(out_dir):
+            os.mkdir(out_dir)
+
+        out_image_path = os.path.join(out_dir,  os.path.basename(str(image_path)))
+        cv2.imwrite(out_image_path, image)

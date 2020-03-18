@@ -24,7 +24,9 @@ from tools.utils.model_zoo import MODELS
 #weights_file = "./output_models/vehicle_resnet50_21_20191219_001108.pth"
 #weights_file = "./output_models/vehicle_resnet18_27_20191218_164439.pth"
 #weights_file = "./output_models/vehicle_alexnet_99_20191220_021124.pth"
-weights_file = "./output_models/gender_res18_0.7674_16_best_20200315_203721.pth"
+weights_file = "./output_models/gender_res18_0.9626_30_best_20200318_110241.pt"
+#gender_retrain_res18_0.9836_29_best_20200318_103016.pt"
+#gender_res18_0.9863_30_best_20200316_144607.pt"
 
 ############ 01 model define #################################
 model_struc = MODELS(class_num = len(class_to_index), with_wts = False).resnet18()
