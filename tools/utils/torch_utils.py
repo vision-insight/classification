@@ -94,14 +94,14 @@ def train_model(model, dataloaders, criterion, optimizer,\
         print()
     
     time_elapsed = time.time() - since
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-    torch.save(best_model_wts, \
-                    os.path.join(save_dir, "_".join([prefix, "%.4f" % best_acc,  str(best_epoch), "best", time_stamp()]) + '.pth'))
+    if not os.path.exists(save_dir):os.makedirs(save_dir)
+    model_name = f"{prefix}_{best_acc:.4f}_{best_epoch}_best_{time_stamp()}.pt"
+    model_path = os.path.join(save_dir, model_name)
+    torch.save(best_model_wts, model_path)
     
-    print("Training complete in {:.0f}m {:.0f}s".format(
-                                    time_elapsed // 60, time_elapsed %60))
-    print("Best val Acc: {:4f}".format(best_acc))
+    print(f"Training complete in {time_elapsed//60:.0f}m {time_elapsed%60:.0f}s")
+    print(f"Best val Acc: {best_acc:.4f}")
+    print(f"The model's path : {model_path}")
 
 
 def load_model_from_wts(model_struc, weights, gpu_id = [0]):

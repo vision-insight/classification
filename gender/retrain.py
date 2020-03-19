@@ -17,7 +17,7 @@ base_path = "/media/D/lulei/classification/"
 sys.path.insert(0, base_path) 
 from tools.utils.model_zoo import MODELS
 
-weights_file = "./output_models/gender_res18_0.9863_30_best_20200316_144607.pt"
+weights_file = "./output_models/gender_res18_0.8953_9_best_20200318_125440.pt"
 
 model = MODELS(with_wts = False, class_num = 2).resnet18()
 

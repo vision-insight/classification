@@ -88,10 +88,10 @@ class data_split:
                     for i in image_set:
                             #print(threading.current_thread().name,i)
                             #time.sleep(1)
-                        if len(threading.enumerate()) >= 1000:
-                                time.sleep(5)
-                        Thread(target = shutil.copy, args=(i, dest_class_dir), daemon = True).start()
-                    #[shutil.copy(i, dest_class_dir) for i in image_set] 
+                        #if len(threading.enumerate()) >= 1000:
+                        #        time.sleep(15)
+                        #Thread(target = shutil.copy, args=(i, dest_class_dir), daemon = True).start()
+                        shutil.copy(i, dest_class_dir)
 
 
 def mkdir(*path):

@@ -6,6 +6,14 @@ from PIL import Image
 import torch
 import numpy as np
 
+
+def head_center(image):
+    iw, ih = image.size
+    if ih >= iw*2:
+        image = image.crop((0, 0, iw, ih//2))
+    return image
+
+
 def pad_img(image, long_side):
     '''
         rescale the input image to make its long side equal to long_side,
@@ -91,4 +99,46 @@ def get_class_weights(input_dir, idx_to_class, idx_first = True):
     weights = weights/weights.sum()#*10
 
     return weights
+
+def list_split(input_list, ratio = [0.5, 0.5], shuffle = False):
+    assert sum(ratio) == 1, print("sum of ratio should be 1")
+    input_list = sorted(input_list)
+    len_list = len(input_list)
+
+    split_len = []
+    for i in ratio[:-1]:
+        split_len.append(round(len_list*i))
+
+    return_list = []
+    temp = 0
+    for i in split_len:
+        start, end = temp, temp + i
+        temp += i
+        return_list.append(input_list[start: end])
+    return_list.append(input_list[temp:])
+
+    return return_list
+
+def get_all_images(input_dir, ext = "jpg", shuffle = True):
+    image_paths = [i for i in pathlib.Path(input_dir).rglob("*.jpg")] #(".".join(["*", ext]))]
+    if shuffle:
+        random.shuffle(image_paths)
+    return image_paths
+
+def imread(file_name, is_gray = False, resize = False, width = None, height = None):
+    if is_gray:
+        image = cv2.imread(str(file_name), flags = cv2.IMREAD_GRAYSCALE)
+    else:
+        image = cv2.cvtColor(cv2.imread(str(file_name)), cv2.COLOR_BGR2RGB)
+
+    if resize:
+        h, w = image.shape[:2]
+        if width == None and height != None:
+            width = int(height/h*w)
+        elif width != None and height == None:
+            height = int(width/w*width)
+
+        image = cv2.resize(image, (width, height))
+
+    return image
 

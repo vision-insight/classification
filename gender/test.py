@@ -25,7 +25,7 @@ output_dir = "./output_images/"
 
 
 data = ImageFolder(root = image_dir,
-                   transform=image_trans["test"])
+                   transform=image_trans["valid"])
 
 dataloader = DataLoader(data,
                         batch_size = batch_size,
@@ -33,7 +33,8 @@ dataloader = DataLoader(data,
                         num_workers = cpu_count()//4*3)
 
 ########### 00 load the model #####################################
-weights_file = "./output_models/gender_res18_0.9626_30_best_20200318_110241.pt"
+weights_file = "./output_models/gender_res18_0.9406_26_best_20200318_170706.pt"
+#gender_res18_0.9626_30_best_20200318_110241.pt"
 #gender_retrain_res18_0.9836_29_best_20200318_103016.pt"
 #gender_res18_0.9863_30_best_20200316_144607.pt"
 
@@ -54,7 +55,7 @@ with torch.no_grad():
 
     for image_path  in tqdm(pathlib.Path(image_dir).rglob("*.jpg")):
         image = Image.open(image_path)
-        image_torch = image_trans["test"](image).unsqueeze(0).cuda(device = 0)
+        image_torch = image_trans["valid"](image).unsqueeze(0).cuda(device = 0)
         output = model(image_torch)
         log_prob, pred_label = torch.max(output.data, 1)
         label = index_to_class[int(pred_label.cpu())]

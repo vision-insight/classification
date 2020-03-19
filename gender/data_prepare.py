@@ -25,7 +25,7 @@ img_h, img_w = 227,320
 dataset_dir = "/media/D/lulei/data/gender/split"
 
 # Batch size
-batch_size = 140
+batch_size = 20
 print("[INFO] batch size : ", batch_size)
 
 train_data_dir= os.path.join(dataset_dir, 'train')
@@ -42,6 +42,7 @@ image_trans = {
         # resize the input image into the predefined scale
         #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC), # (h, w)
         # random choose one of the predefined transforms (in the list) when performing the training process
+        #transforms.Lambda(lambda img : head_center(img)),
         transforms.Lambda(lambda img : pad_img(img, img_w)),
         transforms.RandomChoice([
             transforms.RandomHorizontalFlip(),
@@ -59,6 +60,7 @@ image_trans = {
         #transforms.Grayscale(num_output_channels=1),
         #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
         #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.4,0.3)),
+        #transforms.Lambda(lambda img : head_center(img)),
         transforms.Lambda(lambda img : pad_img(img, img_w)),
         transforms.RandomChoice([
             transforms.RandomHorizontalFlip(),
@@ -106,12 +108,12 @@ dataloaders = {
     "train": DataLoader(data['train'], 
                         batch_size=batch_size, 
                         shuffle=True,
-                        num_workers= cpu_count()//4*3),
+                        num_workers= cpu_count()),
 
     "valid": DataLoader(data['valid'], 
                         batch_size=batch_size*2, 
                         shuffle=True,
-                        num_workers= cpu_count()//4*3),
+                        num_workers= cpu_count()),
 
     #"test":  DataLoader(data['test'],
     #                    batch_size=batch_size*2, 
