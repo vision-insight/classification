@@ -115,7 +115,7 @@ def list_split(input_list, ratio = [0.5, 0.5], shuffle = False):
 
 if __name__ == "__main__":
 
-    config_file = "/media/D/lulei/classification/tools/config.cfg"
+    config_file = "./config.cfg"
     
     ds = data_split(config_file = config_file)
     ds.split()

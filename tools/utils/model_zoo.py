@@ -26,6 +26,12 @@ class MODELS:
                                     out_features= self.class_num, bias=True)
         return model 
 
+    def resnet34(self):
+        model = models.resnet34(pretrained = self.with_wts)
+        model.fc = nn.Linear(in_features=model.fc.in_features, \
+                                    out_features= self.class_num, bias=True)
+        return model
+
     def resnet50(self):
         model = models.resnet50(pretrained = self.with_wts)
         model.fc = nn.Linear(in_features=model.fc.in_features, \

@@ -25,7 +25,7 @@ img_h, img_w = 227,400
 dataset_dir = "/media/D/lulei/data/age/split"
 
 # Batch size
-batch_size = 80
+batch_size = 20
 print("[INFO] batch size : ", batch_size)
 
 train_data_dir= os.path.join(dataset_dir, 'train')
@@ -43,12 +43,12 @@ image_trans = {
         # random choose one of the predefined transforms (in the list) when performing the training process
         #transforms.Lambda(lambda img : head_center(img)),
         transforms.Lambda(lambda img : pad_img(img, img_w)),
-        transforms.RandomChoice([
-            transforms.RandomHorizontalFlip(),
-            #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
-            #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
-            transforms.RandomRotation(30, resample=False, expand=False, center=None)
-                                ]),
+        #transforms.RandomChoice([
+        #    transforms.RandomHorizontalFlip(),
+        #    #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
+        #    #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
+        #    transforms.RandomRotation(30, resample=False, expand=False, center=None)
+        #                        ]),
         
         #transforms.Lambda(lambda img : verticalize(img)),
         # transfer the type of input image into tensor style
@@ -61,12 +61,12 @@ image_trans = {
         #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.4,0.3)),
         #transforms.Lambda(lambda img : head_center(img)),
         transforms.Lambda(lambda img : pad_img(img, img_w)),
-        transforms.RandomChoice([
-            transforms.RandomHorizontalFlip(),
-            #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
-            #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
-            transforms.RandomRotation(30, resample=False, expand=False, center=None)
-                                ]),
+        #transforms.RandomChoice([
+        #    transforms.RandomHorizontalFlip(),
+        #    #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
+        #    #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
+        #    transforms.RandomRotation(30, resample=False, expand=False, center=None)
+        #                        ]),
         transforms.ToTensor(),
                                 ]),
 

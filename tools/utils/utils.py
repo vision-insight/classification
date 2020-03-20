@@ -92,6 +92,8 @@ def get_class_weights(input_dir, idx_to_class, idx_first = True):
                 for subclass_name in class_name:
                     temp_num = len([i for i in pathlib.Path(os.path.join(input_dir, subclass_name)).rglob("*.jpg")])
                     temp_sum += temp_num
+            else:
+                temp_sum = len([i for i in pathlib.Path(os.path.join(input_dir, class_name)).rglob("*.jpg")])
         except:
             temp_sum = len([i for i in pathlib.Path(os.path.join(input_dir, class_name)).rglob("*.jpg")])
         weights.append(1.0/temp_sum)
