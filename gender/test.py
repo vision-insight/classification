@@ -33,13 +33,10 @@ dataloader = DataLoader(data,
                         num_workers = cpu_count()//4*3)
 
 ########### 00 load the model #####################################
-weights_file = "./output_models/gender_res18_0.9406_26_best_20200318_170706.pt"
-#gender_res18_0.9626_30_best_20200318_110241.pt"
-#gender_retrain_res18_0.9836_29_best_20200318_103016.pt"
-#gender_res18_0.9863_30_best_20200316_144607.pt"
+weights_file = "./output_models/gender_res18_0.8872_56_best_20200319_220102.pt"
 
 ############ 01 model define #################################
-model_struc = MODELS(class_num = len(class_to_index), with_wts = False).resnet18()
+model_struc = MODELS(class_num = len(class_to_index), with_wts = False).resnet50()
 
 ###########  02 load wts ############################
 model = load_model_from_wts(model_struc, weights_file, gpu_id = [0])

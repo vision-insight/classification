@@ -114,9 +114,12 @@ def load_model_from_wts(model_struc, weights, gpu_id = [0]):
             model = model.cuda(device = 0)
         except Exception as e:
             if "module" in str(e):
+                print("3")
                 model = nn.DataParallel(model_struc)
                 model.load_state_dict(wts)
                 model = model.cuda(device = 0)
+            else:
+                print(e)
     else:
         raise Exception("Invalid weight file", weights)
 

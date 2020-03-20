@@ -71,19 +71,6 @@ image_trans = {
         transforms.ToTensor(),
                                 ]),
 
-    #'test': transforms.Compose([
-    #    #transforms.Grayscale(num_output_channels=1),
-    #    #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
-    #    #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.4,0.3)),
-    #    transforms.Lambda(lambda img : pad_img(img, img_w)),
-    #    transforms.RandomChoice([
-    #        transforms.RandomHorizontalFlip(), 
-    #        #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
-    #        #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
-    #        transforms.RandomRotation(30, resample=False, expand=False, center=None)
-    #                            ]),
-    #    transforms.ToTensor(),
-    #                           ])
              }
 
 ############## 002 Load Data from folders   ##################
@@ -95,10 +82,6 @@ data = {
     'valid': ImageFolder(root=valid_data_dir, 
                          transform=image_trans['valid'],
                          target_transform=None),
-
-    #'test': ImageFolder(root=test_data_dir, 
-    #                    transform=image_trans['test'],
-    #                    target_transform=None)
         }
 
 
@@ -115,10 +98,6 @@ dataloaders = {
                         shuffle=True,
                         num_workers= cpu_count()),
 
-    #"test":  DataLoader(data['test'],
-    #                    batch_size=batch_size*2, 
-    #                    shuffle=True,
-    #                    num_workers= cpu_count()//4*3)
               }
 
 ############ 004 get the weights of each classes ############
