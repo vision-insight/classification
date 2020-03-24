@@ -22,7 +22,7 @@ os.system("clear")
 img_h, img_w = 227,320
 
 # Set train and valid directory paths
-dataset_dir = "/media/D/lulei/data/gender/split"
+dataset_dir = "/media/D/lulei/data/age/split"
 
 # Batch size
 batch_size = 20
