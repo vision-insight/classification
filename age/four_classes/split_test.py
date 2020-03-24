@@ -2,7 +2,7 @@ import os
 import sys
 import torch
 import pathlib
-from torch.utils.data import Dataset, DataLoader, random_split
+from torch.utils.data import Dataset, DataLoader, random_split, ConcatDataset
 from torchvision import datasets, models, transforms
 import PIL
 from PIL import Image
@@ -19,7 +19,7 @@ os.system("clear")
 ################## 00 variable  Assignment ################################
 
 # Height and width of the CNN input image
-img_h, img_w = 180, 320
+img_h, img_w = 180,180
 
 # Set train and valid directory paths
 dataset_dir = "/media/D/lulei/data/age/split"
@@ -30,7 +30,7 @@ idx_and_class = {0 : ['0-8', '8-18'],
                  2 : ['35-45', '45-65'],
                  3 : ['65+']}
 # Batch size
-batch_size = 100
+batch_size = 256
 print("[INFO] batch size : ", batch_size)
 
 
@@ -80,7 +80,7 @@ data = {
 
 
 ############# 003 Data iterators (Data loader) ###########################
-#train_set, valid_set = random_split(data['train'], (100, len(data['train']) -100))
+train_set, valid_set = random_split(data['train'], (100, len(data['train']) -100))
 
 
 

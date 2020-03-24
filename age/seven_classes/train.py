@@ -18,7 +18,7 @@ sys.path.insert(0, base_path)
 from tools.utils.model_zoo import MODELS
 
 
-model = MODELS(with_wts = True, class_num = 7).resnet34()
+model = MODELS(with_wts = True, class_num = class_num).resnet34()
 
 model = model.cuda(device  = 0)
 
