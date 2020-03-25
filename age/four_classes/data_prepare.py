@@ -30,7 +30,7 @@ idx_and_class = {0 : ['0-8', '8-18'],
                  2 : ['35-45', '45-65'],
                  3 : ['65+']}
 # Batch size
-batch_size = 100
+batch_size = 30
 print("[INFO] batch size : ", batch_size)
 
 
@@ -82,16 +82,15 @@ data = {
 ############# 003 Data iterators (Data loader) ###########################
 #train_set, valid_set = random_split(data['train'], (100, len(data['train']) -100))
 
-
+balanced_batch_sampler = BalancedBatchSampler(data["train"], n_classes = 4, n_samples = 7)
 
 
 
 
 dataloaders = {
         "train": DataLoader(data['train'], 
-                            batch_size=batch_size, 
-                            shuffle=True,
-                            num_workers= cpu_count()//2),
+                            num_workers= cpu_count()//2,
+                            batch_sampler = balanced_batch_sampler),
 
         "valid": DataLoader(data['valid'], 
                             batch_size=batch_size, 

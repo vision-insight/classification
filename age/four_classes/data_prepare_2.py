@@ -78,17 +78,6 @@ valid_num = len(origin_data) - train_num
 
 data = {}
 data["train"], data["valid"] = random_split(origin_data, (train_num, valid_num))
-print(data["train"].imgs[1])
-
-index_set = {}
-for index, (_ , label) in enumerate(data["train"]):
-    if label not in index_set.keys():
-        index_set.update({label:[]})
-    else:
-        index_set[label].append(index)
-        print("ok")
-
-print(index_set[0][:100])
 
 data["train"].dataset.transform = image_trans['train']
 data["valid"].dataset.transform = image_trans['valid']                        
