@@ -16,32 +16,30 @@ from tools.utils.ImageFolder import ImageFolder
 os.system("clear")
 
 
-################## 00 variable  Assignment ################################
 
-# Height and width of the CNN input image
-img_h, img_w = 180, 320
+################## 00 variables
 
-# Set train and valid directory paths
-dataset_dir = "/media/D/lulei/data/age/split"
+img_h, img_w = 227, 400
+
+n_classes = 4
+
+train_ratio = 0.9
+
+dataset_dir = "/media/D/lulei/data/age/origin"
+
+batch_size = 20
+print("[INFO] batch size : ", batch_size)
 
 # Set the index and the corresponding class name (folder name) of the classes
 idx_and_class = {0 : ['0-8', '8-18'],
                  1 : ['18-25', '25-35'],
                  2 : ['35-45', '45-65'],
                  3 : ['65+']}
-# Batch size
-batch_size = 30
-print("[INFO] batch size : ", batch_size)
-
-
-train_data_dir= os.path.join(dataset_dir, 'train')
-valid_data_dir = os.path.join(dataset_dir, 'valid')
-test_data_dir = os.path.join(dataset_dir, 'test')
 
 
 ########## 001 Data Transforms #####################
 
-image_transforms = { 
+image_trans = { 
     # transforms (a.k.a data augmentations) for the training images
     'train': transforms.Compose([
         # transfer the input image into gray scale
@@ -66,48 +64,43 @@ image_transforms = {
                   }
 
 
-############## 002 Load Data from folders   ##################
+############## 002 Load Data from folders
 
-data = {
-        'train': ImageFolder(root=train_data_dir,
-                             idx_and_class = idx_and_class,
-                             transform=image_transforms['train']),
-        'valid': ImageFolder(root=valid_data_dir, 
-                             idx_and_class = idx_and_class,
-                             transform=image_transforms['valid'],
-                             target_transform=None),
-       }
+origin_data = ImageFolder(root = dataset_dir, idx_and_class = idx_and_class)
 
+train_num = int(len(origin_data) * train_ratio)
+valid_num = len(origin_data) - train_num
+
+data = {}
+data["train"], data["valid"] = random_split(origin_data, (train_num, valid_num))
+
+
+
+data["train"].dataset.transform = image_trans['train']
+data["valid"].dataset.transform = image_trans['valid']
+
+#balanced_batch_sampler = BalancedBatchSampler(data["train"], n_classes = 4, n_samples = 20)
+for i in ["train", "valid"]:
+        print(f"[INFO] {i} data num : {len(data[i])}")
 
 ############# 003 Data iterators (Data loader) ###########################
-#train_set, valid_set = random_split(data['train'], (100, len(data['train']) -100))
-
-balanced_batch_sampler = BalancedBatchSampler(data["train"], n_classes = 4, n_samples = 7)
-
-
-
 
 dataloaders = {
-        "train": DataLoader(data['train'], 
-                            num_workers= cpu_count()//2,
-                            batch_sampler = balanced_batch_sampler),
+            "train": DataLoader(data["train"],
+                                batch_size=batch_size,
+                                sampler = None,
+                                num_workers= cpu_count()),
 
-        "valid": DataLoader(data['valid'], 
-                            batch_size=batch_size, 
-                            shuffle=True,
-                            num_workers= cpu_count()//2),
-              }
-
+                "valid": DataLoader(data["valid"],
+                                    batch_size=batch_size,
+                                    shuffle=True,
+                                    num_workers= cpu_count()),
+                              }
 
 ############ 004 get the weights of each classes ############
+class_to_index = data["train"].dataset.class_to_idx
+index_to_class = { v:k for k,v in class_to_index.items()}
+if n_classes < 10: print(f"[INFO] class to index : {data['train'].dataset.class_to_idx}")
 
-class_to_index = data["train"].class_to_idx
-print("[INFO] class to index : ",class_to_index)
-
-class_weights = get_class_weights(train_data_dir, class_to_index, idx_first = False)
-print("[INFO] class weights : ", class_weights)
-
-############# 005 show the image quantity in each set ##########
-for data_type in ["train", "valid"]:
-    print(f"[INFO] image for {data_type} : {len(data[data_type])}")
-        
+class_weights = get_class_weights(dataset_dir, data["train"].dataset.class_to_idx, idx_first = False)
+print(f"[INFO] class weights : {class_weights}")

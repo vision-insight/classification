@@ -45,13 +45,14 @@ class BalancedBatchSampler(BatchSampler):
                                  for label in self.labels_set}
         for l in self.labels_set:
             np.random.shuffle(self.label_to_indices[l])
-        #self.used_label_indices_count = {label: 0 for label in self.labels_set}
+
         self.n_classes = n_classes
         self.n_samples = n_samples
         self.dataset = dataset
         self.batch_size = self.n_samples * self.n_classes
         self.count = 0
         self.max_batch = max([len(self.label_to_indices[i]) for i in self.labels_set]) // self.batch_size
+        print(self.max_batch)
 
 
     def __iter__(self):
@@ -92,11 +93,11 @@ def train_model(model, dataloaders, criterion, optimizer,\
     
             # Iterate over data
             for inputs, labels in dataloaders[phase]:
-                t_labels = labels.numpy().tolist()
-                u_label = set(t_labels)
-                print("*"*10, u_label)
-                for i in u_label:
-                    print(f"{i} : {t_labels.count(i)}")
+                #t_labels = labels.numpy().tolist()
+                #u_label = set(t_labels)
+                #print("*"*10, u_label)
+                #for i in u_label:
+                #    print(f"{i} : {t_labels.count(i)}")
 
                 inputs = inputs.cuda(device = 0)
                 labels = labels.cuda(device = 0)
