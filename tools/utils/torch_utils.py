@@ -34,7 +34,7 @@ def select_device(force_cpu=False):
 
 class BalancedBatchSampler(BatchSampler):
 
-    def __init__(self, dataset, n_classes, n_samples):
+    def __init__(self, dataset, n_classes, n_samples, batch_num):
         loader = DataLoader(dataset)
         self.labels_list = []
         for _, label in loader:
@@ -52,7 +52,8 @@ class BalancedBatchSampler(BatchSampler):
         self.batch_size = self.n_samples * self.n_classes
         self.count = 0
         self.max_batch = max([len(self.label_to_indices[i]) for i in self.labels_set]) // self.batch_size
-        print(self.max_batch)
+        self.max_batch = batch_num
+        print(f"max batch num for each epoch : {self.max_batch}")
 
 
     def __iter__(self):
