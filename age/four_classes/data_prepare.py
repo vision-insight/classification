@@ -12,6 +12,7 @@ base_path = "/media/D/lulei/classification"
 sys.path.insert(0, base_path)
 from tools.utils.torch_utils import *
 from tools.utils.utils import *
+from tools.utils.sampler import BalancedBatchSampler
 from tools.utils.ImageFolder import ImageFolder
 os.system("clear")
 
@@ -27,7 +28,7 @@ train_ratio = 0.9
 
 dataset_dir = "/media/D/lulei/data/age/origin"
 
-batch_size = 80
+batch_size = 60
 print("[INFO] batch size : ", batch_size)
 
 # Set the index and the corresponding class name (folder name) of the classes
@@ -79,8 +80,10 @@ data["train"], data["valid"] = random_split(origin_data, (train_num, valid_num))
 data["train"].dataset.transform = image_trans['train']
 data["valid"].dataset.transform = image_trans['valid']
 
-balanced_batch_sampler = BalancedBatchSampler(data["train"], n_classes = 4, \
-                                                n_samples = 20, batch_num = 80)
+#balanced_batch_sampler = BalancedBatchSampler(data["train"], n_classes = 4, n_samples = 20, batch_num = 80)
+
+#balanced_batch_sampler = BalancedBatchSampler(data["train"])
+
 for i in ["train", "valid"]:
         print(f"[INFO] {i} data num : {len(data[i])}")
 
@@ -89,7 +92,7 @@ for i in ["train", "valid"]:
 dataloaders = {
             "train": DataLoader(data["train"],
                                 batch_size=batch_size,
-                                sampler = balanced_batch_sampler,
+#                                sampler = balanced_batch_sampler,
                                 num_workers= cpu_count()),
 
                 "valid": DataLoader(data["valid"],
