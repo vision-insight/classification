@@ -22,7 +22,7 @@ img_h, img_w = 227, 400
 
 class_num = 7
 
-train_ratio = 0.8
+train_ratio = 0.9
 
 dataset_dir = "/media/D/lulei/data/age/origin"
 
@@ -78,9 +78,25 @@ valid_num = len(origin_data) - train_num
 
 data = {}
 data["train"], data["valid"] = random_split(origin_data, (train_num, valid_num))
+#
+#index_set = {}
+#for index, (_ , label) in enumerate(data["train"]):
+#    if label not in index_set.keys():
+#        index_set.update({label:[]})
+#    else:
+#        index_set[label].append(index)
+#
+#print(index_set[0][:100])
 
 data["train"].dataset.transform = image_trans['train']
 data["valid"].dataset.transform = image_trans['valid']                        
+
+
+balanced_batch_sampler = BalancedBatchSampler(data["train"], n_classes = 4, n_samples = 20, batch_num = 80)
+
+
+
+
 
 for i in ["train", "valid"]:
     print(f"[INFO] {i} data num : {len(data[i])}")
@@ -89,7 +105,8 @@ for i in ["train", "valid"]:
 dataloaders = {
     "train": DataLoader(data["train"], 
                         batch_size=batch_size, 
-                        shuffle=True,
+                        #shuffle=True,
+                        sampler = balanced_batch_sampler,
                         num_workers= cpu_count()),
 
     "valid": DataLoader(data["valid"], 

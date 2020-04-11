@@ -5,6 +5,10 @@ import torch
 from torch import nn
 import datetime
 import collections
+import numpy as np
+
+from torch.utils.data import DataLoader
+from torch.utils.data.sampler import BatchSampler
 
 def time_stamp():
     return datetime.datetime.now().strftime('%Y%m%d_%H%M%S') #.%f
@@ -26,6 +30,43 @@ def select_device(force_cpu=False):
 
     print('Using %s %s\n' % (device.type, torch.cuda.get_device_properties(0) if cuda else ''))
     return device
+
+
+class BalancedBatchSampler(BatchSampler):
+
+    def __init__(self, dataset, n_classes, n_samples, batch_num):
+        loader = DataLoader(dataset)
+        self.labels_list = []
+        for _, label in loader:
+            self.labels_list.append(label)
+        self.labels = torch.LongTensor(self.labels_list)
+        self.labels_set = list(set(self.labels.numpy()))
+        self.label_to_indices = {label: np.where(self.labels.numpy() == label)[0]
+                                 for label in self.labels_set}
+        for l in self.labels_set:
+            np.random.shuffle(self.label_to_indices[l])
+
+        self.n_classes = n_classes
+        self.n_samples = n_samples
+        self.dataset = dataset
+        self.batch_size = self.n_samples * self.n_classes
+        self.count = 0
+        self.max_batch = max([len(self.label_to_indices[i]) for i in self.labels_set]) // self.batch_size
+        self.max_batch = batch_num
+        print(f"max batch num for each epoch : {self.max_batch}")
+
+
+    def __iter__(self):
+         self.count = self.max_batch
+         while self.count > 0:
+             indices = []
+             for label in self.labels_set:
+                 indices.extend(np.random.choice(self.label_to_indices[label], self.n_samples, replace = True))
+             yield indices
+             self.count -= 1
+
+    def __len__(self):
+        return self.max_batch
 
 def train_model(model, dataloaders, criterion, optimizer,\
                        scheduler, num_epochs=25, save_dir = "./", prefix = "model"):
@@ -53,9 +94,15 @@ def train_model(model, dataloaders, criterion, optimizer,\
     
             # Iterate over data
             for inputs, labels in dataloaders[phase]:
+                #t_labels = labels.numpy().tolist()
+                #u_label = set(t_labels)
+                #print("*"*10, u_label)
+                #for i in u_label:
+                #    print(f"{i} : {t_labels.count(i)}")
+
                 inputs = inputs.cuda(device = 0)
                 labels = labels.cuda(device = 0)
-    
+                
                 # zero the parameter gradients
                 optimizer.zero_grad()
     
