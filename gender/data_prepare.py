@@ -22,7 +22,7 @@ os.system("clear")
 img_h, img_w = 227,320
 
 # Set train and valid directory paths
-dataset_dir = "/media/D/lulei/data/age/split"
+dataset_dir = "/media/D/lulei/data/gender/split/"
 
 # Batch size
 batch_size = 20
@@ -48,7 +48,7 @@ image_trans = {
             transforms.RandomHorizontalFlip(),
             #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
             #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
-            transforms.RandomRotation(30, resample=False, expand=False, center=None)
+            #transforms.RandomRotation(30, resample=False, expand=False, center=None)
                                 ]),
         
         #transforms.Lambda(lambda img : verticalize(img)),
@@ -66,7 +66,7 @@ image_trans = {
             transforms.RandomHorizontalFlip(),
             #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
             #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
-            transforms.RandomRotation(30, resample=False, expand=False, center=None)
+            #transforms.RandomRotation(30, resample=False, expand=False, center=None)
                                 ]),
         transforms.ToTensor(),
                                 ]),

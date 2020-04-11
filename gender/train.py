@@ -19,7 +19,7 @@ from tools.utils.model_zoo import MODELS
 
 
 ###################### 00  model defination ###################################
-model = MODELS(with_wts = True, class_num = 2).resnet50()
+model = MODELS(with_wts = True, class_num = 2).resnet34()
 
 ######################  01 training parameters ############################
 
@@ -32,7 +32,7 @@ model = model.cuda(device  = 0)
 criterion = nn.CrossEntropyLoss(weight = class_weights.cuda(), reduction = "sum")
 
 # Observe that all parameters are being optimized
-optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.9)
 
 # Decay LR by a factor of 0.1 every 7 epochs
 scheduler = exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.1)
@@ -40,7 +40,7 @@ scheduler = exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=15, gamm
 #####################  02  model training #####################################
 num_epochs = 70
 save_dir = "./output_models"
-save_name = "gender_res18"
+save_name = "gender_res34"
 
 
 train_model(model, dataloaders, criterion, optimizer, \
