@@ -2,125 +2,103 @@ import os
 import sys
 import torch
 import pathlib
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, random_split
 from torchvision import datasets, models, transforms
 import PIL
 from PIL import Image
 from multiprocessing import cpu_count
 
-base_path = "/data/lulei/classification"
+base_path = "/media/D/lulei/classification"
 sys.path.insert(0, base_path)
 from tools.utils.torch_utils import *
 from tools.utils.utils import *
+from tools.utils.sampler import BalancedBatchSampler
+#from tools.utils.ImageFolder import ImageFolder
 from torchvision.datasets import ImageFolder
 os.system("clear")
 
 
-################## 00 variable  Assignment ################################
 
-# Height and width of the CNN input image
+################## 00 variables
+
 img_h, img_w = 227, 227
 
-# Set train and valid directory paths
-dataset_dir = "/data/lulei/data/vehicle/frontal_103/split"
+n_classes = 400
 
-# Batch size
-batch_size = 128
+train_ratio = 0.3
+
+dataset_dir = "/media/D/lulei/data/vehicle/roi_400_my"
+
+batch_size = 120
 print("[INFO] batch size : ", batch_size)
-
-
-train_data_dir= os.path.join(dataset_dir, 'train')
-valid_data_dir = os.path.join(dataset_dir, 'valid')
-test_data_dir = os.path.join(dataset_dir, 'test')
+print(f"[INFO] class num : {n_classes}")
 
 
 ########## 001 Data Transforms #####################
 
-image_transforms = { 
+image_trans = { 
+    # transforms (a.k.a data augmentations) for the training images
+    'train': transforms.Compose([
+        transforms.Grayscale(num_output_channels=3),
+        transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC), # (h, w)
+        # random choose one of the predefined transforms (in the list) when performing the training process
+        #transforms.RandomChoice([transforms.RandomHorizontalFlip(),
+        #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3)]),
+        #transforms.Lambda(lambda img : pad_img(img, img_w)),
+        # transfer the type of input image into tensor style
+        transforms.ToTensor(),
+                                ]),
 
-            # transforms (a.k.a data augmentations) for the training images
-            'train': transforms.Compose([
-                # transfer the input image into gray scale
-                #transforms.Grayscale(num_output_channels=1),
-                # resize the input image into the predefined scale
-                transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC), # (h, w)
-                # random choose one of the predefined transforms (in the list) when performing the training process
-                #transforms.RandomChoice([transforms.RandomHorizontalFlip(),
-                #                        transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3)]),
-                #transforms.Lambda(lambda img : pad_img(img, img_w)),
-                # transfer the type of input image into tensor style
-                transforms.ToTensor(),
-                                        ]),
-
-            # transforms for the valid images
-            'valid': transforms.Compose([
-                #transforms.Grayscale(num_output_channels=1),
-                transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
-                #transforms.Lambda(lambda img : pad_img(img, img_w)),
-                transforms.ToTensor(),
-                                        ]),
-
-            # transforms for the test images
-            'test': transforms.Compose([
-                #transforms.Grayscale(num_output_channels=1),
-                transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
-                #transforms.Lambda(lambda img : pad_img(img, img_w)),
-                transforms.ToTensor(),
-                                       ])
-                    }
+    # transforms for the valid images
+    'valid': transforms.Compose([
+        transforms.Grayscale(num_output_channels=3),
+        transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
+        #transforms.Lambda(lambda img : pad_img(img, img_w)),
+        transforms.ToTensor(),
+                                ]),
+                  }
 
 
-############## 002 Load Data from folders   ##################
+############## 002 Load Data from folders
 
-data = {
-        'train': ImageFolder(root=train_data_dir,
-                             transform=image_transforms['train'], ),
+origin_data = ImageFolder(root = dataset_dir)
 
-        'valid': ImageFolder(root=valid_data_dir, 
-                             transform=image_transforms['valid'],
-                             target_transform=None),
+train_num = int(len(origin_data) * train_ratio)
+valid_num = len(origin_data) - train_num
+
+data = {}
+data["train"], data["valid"] = random_split(origin_data, (train_num, valid_num))
 
 
-        'test': ImageFolder(root=test_data_dir, 
-                            transform=image_transforms['test'],
-                            target_transform=None)
-        }
 
+data["train"].dataset.transform = image_trans['train']
+data["valid"].dataset.transform = image_trans['valid']
+
+#balanced_batch_sampler = BalancedBatchSampler(data["train"], n_classes = 4, n_samples = 20, batch_num = 80)
+
+#balanced_batch_sampler = BalancedBatchSampler(data["train"])
+
+for i in ["train", "valid"]:
+        print(f"[INFO] {i} data num : {len(data[i])}")
 
 ############# 003 Data iterators (Data loader) ###########################
 
 dataloaders = {
-        "train": DataLoader(data['train'], 
-                            batch_size=batch_size, 
-                            shuffle=True,
-                            num_workers= cpu_count()//2),
+            "train": DataLoader(data["train"],
+                                batch_size=batch_size,
+#                                sampler = balanced_batch_sampler,
+                                num_workers= cpu_count()),
 
-        "valid": DataLoader(data['valid'], 
-                            batch_size=batch_size*2, 
-                            shuffle=True,
-                            num_workers= cpu_count()//2),
-
-        "test":  DataLoader(data['test'],
-                            batch_size=batch_size*2, 
-                            shuffle=True,
-                            num_workers= cpu_count()//2)
-            }
-
+                "valid": DataLoader(data["valid"],
+                                    batch_size=batch_size,
+                                    shuffle=True,
+                                    num_workers= cpu_count()),
+                              }
 
 ############ 004 get the weights of each classes ############
+class_to_index = data["train"].dataset.class_to_idx
+index_to_class = { v:k for k,v in class_to_index.items()}
+if n_classes < 10: print(f"[INFO] class to index : {data['train'].dataset.class_to_idx}")
 
-class_to_index = data["train"].class_to_idx
-if len(class_to_index) <= 20: print("[INFO] class to index : ",class_to_index)
-
-class_weights = get_class_weights(train_data_dir, class_to_index, idx_first = False)*10
-print("[INFO] class weights : ", class_weights)
-
-############# 005 show the image quantity in each set ##########
-for data_type in ["train", "valid", "test"]:
-    temp_1 = len(data[data_type])
-    print("[INFO] image for %s : %d" % (data_type, temp_1))
-        
-
-
-if __name__ == "__main__":
-    pass
+class_weights = get_class_weights(dataset_dir, data["train"].dataset.class_to_idx, idx_first = False)
+#print(f"[INFO] class weights : {class_weights}")

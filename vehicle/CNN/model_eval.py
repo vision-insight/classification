@@ -17,10 +17,11 @@ from tools.utils.model_zoo import MODELS
 #weights_file = "./output_models/vehicle_resnet50_21_20191219_001108.pth"
 #weights_file = "./output_models/vehicle_resnet18_27_20191218_164439.pth"
 #weights_file = "./output_models/vehicle_alexnet_99_20191220_021124.pth"
-weights_file = "./output_models/vehicle_resnet50_0.9182_49_best_20191224_142352.pth"
+weights_file = "./output_models/vehicle_vgg19_0.9553_19_best_20200412_032956.pt"
+#vehicle_resnet50_0.9182_49_best_20191224_142352.pth"
 
 ############ 01 model define #################################
-model_struc = MODELS(class_num = len(class_to_index), with_wts = False).resnet50()
+model_struc = MODELS(class_num = n_classes, with_wts = False).alexnet() #resnet50()
 
 ###########  02 load wts ############################
 model = load_model_from_wts(model_struc, weights_file, gpu_id = [0])
@@ -32,15 +33,15 @@ with torch.no_grad():
     label_list = []
     pred_label_list = []
 
-    for images, labels in tqdm(dataloaders["test"]):
-        label_list.extend(labels)
+    #for images, labels in tqdm(dataloaders["test"]):
+    #    label_list.extend(labels)
 
-        images, labels = images.cuda(device = 0), labels.cuda(device = 0)
+    #    images, labels = images.cuda(device = 0), labels.cuda(device = 0)
 
-        outputs = model(images)
-        log_probs, pred_labels = torch.max(outputs.data, 1)
+    #    outputs = model(images)
+    #    log_probs, pred_labels = torch.max(outputs.data, 1)
 
-        pred_label_list.extend(pred_labels.cpu())
+    #    pred_label_list.extend(pred_labels.cpu())
 
     for images, labels in tqdm(dataloaders["valid"]):
         label_list.extend(labels)
