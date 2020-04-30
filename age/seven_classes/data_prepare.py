@@ -2,7 +2,7 @@ import os
 import sys
 import torch
 import pathlib
-from torch.utils.data import Dataset, DataLoader, random_split
+from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, models, transforms
 import PIL
 from PIL import Image
@@ -15,21 +15,33 @@ from tools.utils.utils import *
 from torchvision.datasets import ImageFolder
 os.system("clear")
 
+def c_crop(image):
+    w, h = image.size #
+    if h > w*2:
+        image = image.crop(0, 0, w, w)
+        return image
+    else:
+        return image
+################## 00 variable  Assignment ################################
 
-################## 00 variables
+# Height and width of the CNN input image
+img_h, img_w = 260, 360
 
-img_h, img_w = 227, 400
+n_classes = 7
 
-class_num = 7
+# Set train and valid directory paths
+dataset_dir = "/media/D/lulei/data/age/split"
 
-train_ratio = 0.9
-
-dataset_dir = "/media/D/lulei/data/age/origin"
-
-batch_size = 20
+# Batch size
+batch_size = 80
 print("[INFO] batch size : ", batch_size)
 
-################### 01 Data Transforms
+train_data_dir= os.path.join(dataset_dir, 'train')
+valid_data_dir = os.path.join(dataset_dir, 'valid')
+#test_data_dir = os.path.join(dataset_dir, 'test')
+
+
+########## 001 Data Transforms #####################
 
 image_trans = { 
     'train': transforms.Compose([
@@ -40,12 +52,13 @@ image_trans = {
         # random choose one of the predefined transforms (in the list) when performing the training process
         #transforms.Lambda(lambda img : head_center(img)),
         transforms.Lambda(lambda img : pad_img(img, img_w)),
-        #transforms.RandomChoice([
-        #    transforms.RandomHorizontalFlip(),
-        #    #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
-        #    #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
-        #    transforms.RandomRotation(30, resample=False, expand=False, center=None)
-        #                        ]),
+        transforms.RandomChoice([
+            transforms.RandomHorizontalFlip(),
+            transforms.Lambda(lambda img : c_crop(img)),
+            #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
+            #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
+            #transforms.RandomRotation(30, resample=False, expand=False, center=None)
+                                ]),
         
         #transforms.Lambda(lambda img : verticalize(img)),
         # transfer the type of input image into tensor style
@@ -58,67 +71,57 @@ image_trans = {
         #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.4,0.3)),
         #transforms.Lambda(lambda img : head_center(img)),
         transforms.Lambda(lambda img : pad_img(img, img_w)),
-        #transforms.RandomChoice([
-        #    transforms.RandomHorizontalFlip(),
-        #    #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
-        #    #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
-        #    transforms.RandomRotation(30, resample=False, expand=False, center=None)
-        #                        ]),
+        transforms.RandomChoice([
+            transforms.RandomHorizontalFlip(),
+            #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
+            #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
+            #transforms.RandomRotation(30, resample=False, expand=False, center=None)
+                                ]),
         transforms.ToTensor(),
                                 ]),
 
              }
 
-############## 002 Load Data from folders
+############## 002 Load Data from folders   ##################
 
-origin_data = ImageFolder(root = dataset_dir)
+data = {
+    'train': ImageFolder(root=train_data_dir,
+                         transform=image_trans['train'], ),
 
-train_num = int(len(origin_data) * train_ratio)
-valid_num = len(origin_data) - train_num
-
-data = {}
-data["train"], data["valid"] = random_split(origin_data, (train_num, valid_num))
-#
-#index_set = {}
-#for index, (_ , label) in enumerate(data["train"]):
-#    if label not in index_set.keys():
-#        index_set.update({label:[]})
-#    else:
-#        index_set[label].append(index)
-#
-#print(index_set[0][:100])
-
-data["train"].dataset.transform = image_trans['train']
-data["valid"].dataset.transform = image_trans['valid']                        
+    'valid': ImageFolder(root=valid_data_dir, 
+                         transform=image_trans['valid'],
+                         target_transform=None),
+        }
 
 
-balanced_batch_sampler = BalancedBatchSampler(data["train"], n_classes = 4, n_samples = 20, batch_num = 80)
-
-
-
-
-
-for i in ["train", "valid"]:
-    print(f"[INFO] {i} data num : {len(data[i])}")
 ############# 003 Data iterators (Data loader) ###########################
 
 dataloaders = {
-    "train": DataLoader(data["train"], 
-                        batch_size=batch_size, 
-                        #shuffle=True,
-                        sampler = balanced_batch_sampler,
-                        num_workers= cpu_count()),
-
-    "valid": DataLoader(data["valid"], 
+    "train": DataLoader(data['train'], 
                         batch_size=batch_size, 
                         shuffle=True,
                         num_workers= cpu_count()),
+
+    "valid": DataLoader(data['valid'], 
+                        batch_size=batch_size*2, 
+                        shuffle=True,
+                        num_workers= cpu_count()),
+
               }
 
 ############ 004 get the weights of each classes ############
 
-if class_num < 10: print(f"[INFO] class to index : {data['train'].dataset.class_to_idx}")
+class_to_index = data["train"].class_to_idx
+index_to_class = { v:k for k,v in class_to_index.items()}
+if len(class_to_index) <= 20: print("[INFO] class to index : ",class_to_index)
 
-class_weights = get_class_weights(dataset_dir, data["train"].dataset.class_to_idx, idx_first = False)
-print(f"[INFO] class weights : {class_weights}")
+class_weights = get_class_weights(train_data_dir, class_to_index, idx_first = False)
+print("[INFO] class weights : ", class_weights)
 
+############# 005 show the image quantity in each set ##########
+for data_type in ["train", "valid"]:
+    print(f"[INFO] image for {data_type} : {len(data[data_type])}")
+        
+
+if __name__ == "__main__":
+    pass

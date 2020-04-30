@@ -1,5 +1,4 @@
 *.jpg
-result_img
-results-q1
-result-1
-result-2
+input_images/*
+output_images/*
+output_models/*

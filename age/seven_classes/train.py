@@ -18,14 +18,14 @@ sys.path.insert(0, base_path)
 from tools.utils.model_zoo import MODELS
 
 
-model = MODELS(with_wts = True, class_num = class_num).resnet34()
+model = MODELS(with_wts = True, class_num = n_classes).resnet34()
 
 model = model.cuda(device  = 0)
 
 criterion = nn.CrossEntropyLoss(weight = class_weights.cuda(), reduction = "sum")
 
 # Observe that all parameters are being optimized
-optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.9)
 
 # Decay LR by a factor of 0.1 every 7 epochs
 scheduler = exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
