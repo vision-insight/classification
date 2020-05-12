@@ -10,7 +10,7 @@ from multiprocessing import cpu_count
 
 base_path = "/media/D/lulei/classification"
 sys.path.insert(0, base_path)
-from tools.utils.torch_utils import *
+from classification.tools.utils.torch_utils import *
 from tools.utils.utils import *
 from tools.utils.sampler import BalancedBatchSampler
 from tools.utils.ImageFolder import ImageFolder

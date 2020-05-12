@@ -40,21 +40,17 @@ valid_data_dir = os.path.join(dataset_dir, 'valid')
 image_trans = { 
     'train': transforms.Compose([
         # transfer the input image into gray scale
-        #transforms.Grayscale(num_output_channels=1),
+        # transforms.Grayscale(num_output_channels=1),
         # resize the input image into the predefined scale
-        #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC), # (h, w)
-        # random choose one of the predefined transforms (in the list) when performing the training process
-        #transforms.Lambda(lambda img : head_center(img)),
+        # transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC), # (h, w)
         transforms.Lambda(lambda img : pad_img(img, img_w)),
         transforms.RandomChoice([
+            transforms.Grayscale(num_output_channels=3),
             transforms.RandomHorizontalFlip(),
-            #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
+            transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
             #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
-            #transforms.RandomRotation(30, resample=False, expand=False, center=None)
+            transforms.RandomRotation(10, resample=False, expand=False, center=None)
                                 ]),
-        
-        #transforms.Lambda(lambda img : verticalize(img)),
-        # transfer the type of input image into tensor style
         transforms.ToTensor(),
                                 ]),
 
@@ -65,10 +61,11 @@ image_trans = {
         #transforms.Lambda(lambda img : head_center(img)),
         transforms.Lambda(lambda img : pad_img(img, img_w)),
         transforms.RandomChoice([
+            transforms.Grayscale(num_output_channels=3),
             transforms.RandomHorizontalFlip(),
-            #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
+            transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
             #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
-            #transforms.RandomRotation(30, resample=False, expand=False, center=None)
+            transforms.RandomRotation(10, resample=False, expand=False, center=None)
                                 ]),
         transforms.ToTensor(),
                                 ]),

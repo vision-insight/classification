@@ -25,7 +25,7 @@ criterion = nn.CrossEntropyLoss() #weight = class_weights.cuda(), reduction = "s
 #criterion = 
 
 # Observe that all parameters are being optimized
-optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.9)
 #optimizer = optim.RMSprop(model.parameters(), lr= 0.001, alpha=0.9)
 #optimizer = optim.Adam(model.parameters(), lr=LR, betas=(0.9,0.99))
 
@@ -33,7 +33,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 scheduler = exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.1)
 
 #####################  02  model training #####################################
-num_epochs = 30
+num_epochs = 60
 save_dir = "./output_models"
 save_name = "bald_2_resnet18"
 

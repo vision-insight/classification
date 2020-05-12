@@ -22,7 +22,8 @@ from tools.utils.model_zoo import MODELS
 
 image_dir = "./input_images/"
 output_dir = "./output_images/"
-
+os.system("rm -rf ./output_images")
+os.system("mkdir output_images")
 
 data = ImageFolder(root = image_dir,
                    transform=image_trans["valid"])
@@ -33,7 +34,7 @@ dataloader = DataLoader(data,
                         num_workers = cpu_count()//4*3)
 
 ########### 00 load the model #####################################
-weights_file = "./output_models/bald_2_resnet18_0.9943_17_best_20200426_143242.pt"
+weights_file = "./output_models/bald_2_resnet18_0.9879_46_best_20200511_092426.pt"
 
 ############ 01 model define #################################
 model_struc = MODELS(class_num = n_classes, with_wts = False).resnet18()
@@ -42,7 +43,6 @@ model_struc = MODELS(class_num = n_classes, with_wts = False).resnet18()
 model = load_model_from_wts(model_struc, weights_file, gpu_id = [0])
 
 ############ 03 testing ################################
-
 
 model.eval() 
 with torch.no_grad():
