@@ -28,6 +28,8 @@ dataset_dir = "/data/lulei/data/vehicle/frontal_103/split"
 batch_size = 128
 print("[INFO] batch size : ", batch_size)
 
+n_classes = 1759
+print(f"[INFO] class num : {n_classes}")
 
 train_data_dir= os.path.join(dataset_dir, 'train')
 valid_data_dir = os.path.join(dataset_dir, 'valid')
@@ -110,9 +112,12 @@ dataloaders = {
 ############ 004 get the weights of each classes ############
 
 class_to_index = data["train"].class_to_idx
+# index_to_class = {v:k for k, v in class_to_index.items()}
+# with open("./index_to_class.txt", "w") as f:
+#     f.write(str(index_to_class))
 if len(class_to_index) <= 20: print("[INFO] class to index : ",class_to_index)
 
-class_weights = get_class_weights(train_data_dir, class_to_index, idx_first = False)*10
+class_weights = get_class_weights(train_data_dir, class_to_index, idx_first = False)
 print("[INFO] class weights : ", class_weights)
 
 ############# 005 show the image quantity in each set ##########

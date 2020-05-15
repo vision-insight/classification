@@ -8,7 +8,7 @@ import PIL
 from PIL import Image
 from multiprocessing import cpu_count
 
-base_path = "/media/D/lulei/classification"
+base_path = "/data/lulei/classification"
 sys.path.insert(0, base_path)
 from tools.utils.torch_utils import *
 from tools.utils.utils import *

@@ -7,6 +7,9 @@ from tqdm import tqdm
 from threading import Thread
 import threading
 import time
+import numpy as np
+
+random.seed(10)
 
 sem=threading.Semaphore(10024)
 
@@ -100,17 +103,28 @@ def mkdir(*path):
             os.makedirs(p)
 
 def list_split(input_list, ratio = [0.5, 0.5], shuffle = False):
-    assert sum(ratio) == 1, print('sum of ratio must equals to 1')
-    if shuffle == True: random.shuffle(input_list)
-    c_list = [ round(i*len(input_list)  ) for i in ratio ]
-    new_list = []
-    for i in range(len(c_list)):
-        if i == 0:
-            start = 0
-        end = start + c_list[i]
-        new_list.append(input_list[start : end])
-        start = end
-    return new_list
+    assert sum(ratio) == 1, print("sum of ratio should be 1")
+    input_list = sorted(input_list)
+    len_list = len(input_list)
+
+    split_position = []
+    temp = 0
+    for i in ratio:
+        split_position.append(round(len_list*(temp+i)))
+        temp += i
+
+    return_list = np.split(input_list, split_position)
+    output_list = []
+    temp_sum = 0
+    for i in return_list:
+        if len(i) == 0:
+            continue
+        temp_sum += len(i)
+        output_list.append(i.tolist())
+
+    if temp_sum != len_list:
+        raise Exception("output list is len than input_list")
+    return output_list
 
 
 if __name__ == "__main__":
