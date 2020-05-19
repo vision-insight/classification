@@ -18,12 +18,15 @@ base_path = "/media/D/lulei/classification"
 sys.path.insert(0, base_path)
 from tools.metrics import *
 from tools.utils.model_zoo import MODELS
+from tools.utils.utils import *
 
 
 image_dir = "./input_images/"
 output_dir = "./output_images/"
+
 os.system("rm -rf ./output_images")
 os.system("mkdir output_images")
+os.system("echo *.jpg >> ../output_images/.gitignore")
 
 data = ImageFolder(root = image_dir,
                    transform=image_trans["valid"])
@@ -34,7 +37,7 @@ dataloader = DataLoader(data,
                         num_workers = cpu_count()//4*3)
 
 ########### 00 load the model #####################################
-weights_file = "./output_models/bald_2_resnet18_0.9879_46_best_20200511_092426.pt"
+weights_file = "./output_models/bald_2_resnet18_0.9794_40_best_20200518_173824.pt"
 
 ############ 01 model define #################################
 model_struc = MODELS(class_num = n_classes, with_wts = False).resnet18()
@@ -67,7 +70,11 @@ with torch.no_grad():
         
         out_dir = os.path.join(output_dir, label)
         if not os.path.isdir(out_dir):
-            os.mkdir(out_dir)
+            os.makedirs(out_dir)
 
         out_image_path = os.path.join(out_dir,  os.path.basename(str(image_path)))
         cv2.imwrite(out_image_path, image)
+
+
+
+

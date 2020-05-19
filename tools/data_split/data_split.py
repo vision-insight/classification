@@ -8,7 +8,11 @@ from threading import Thread
 import threading
 import time
 import numpy as np
+import sys
 
+base_path = "/media/D/lulei/classification"
+sys.path.insert(0, base_path)
+from tools.utils.utils import *
 random.seed(10)
 
 sem=threading.Semaphore(10024)
@@ -56,16 +60,13 @@ class data_split:
                 print(f"[CONFIG INFO] shuffle? : {self.shuffle}")
                 continue
 
+        os.system(f"rm -rf {self.dest_dir}")
+        os.system(f"mkdir {self.dest_dir}")
+
+        
         self.ratio = {"train": train_ratio, "valid": valid_ratio, "test": test_ratio}
         assert train_ratio + valid_ratio + test_ratio == 1,\
                 print('[INFO] sum of all ratio should be 1')
-
-
-
-    #def split_parallel(self, label = "train"):
-        
-        
-
 
     def split(self):
         self.config_reader()
@@ -74,7 +75,7 @@ class data_split:
         for temp in ["train", "valid", "test"]:
             if self.ratio[temp] != 0:
                 dest_dirs[temp] = os.path.join(self.dest_dir, temp)
-                mkdir(dest_dirs[temp])
+                os.makedirs(dest_dirs[temp])
         
         for class_name in tqdm(os.listdir(self.source_dir)):
             class_dir = os.path.join(self.source_dir, class_name)
@@ -82,49 +83,36 @@ class data_split:
                 continue
             images_per_class = [str(i) for i in pathlib.Path(class_dir).rglob("*.jpg")]
     
-            image_sets = list_split(images_per_class, ratio = [self.ratio["train"], self.ratio["valid"], self.ratio["test"]])
+            image_sets = list_split(images_per_class, split_ratio = \
+                                    [self.ratio["train"], self.ratio["valid"], self.ratio["test"]])
     
+            count = 0
             for temp, image_set in zip(["train", "valid", "test"], image_sets):
                 if self.ratio[temp] != 0 and os.path.isdir(dest_dirs[temp]):
                     dest_class_dir = os.path.join(dest_dirs[temp], class_name)
                     mkdir(dest_class_dir)
-                    for i in image_set:
+                    count += len(image_set)
+                    for image_path in image_set:
+                        image_name = os.path.basename(image_path)
+                        dest_path = os.path.join(dest_class_dir, image_name)
+                        if os.path.exists(dest_path):
+                            print(image_name)
+
                             #print(threading.current_thread().name,i)
                             #time.sleep(1)
                         #if len(threading.enumerate()) >= 1000:
                         #        time.sleep(15)
                         #Thread(target = shutil.copy, args=(i, dest_class_dir), daemon = True).start()
-                        shutil.copy(i, dest_class_dir)
+                        #shutil.copy(i, dest_class_dir)
+                        
+                        os.system(f"cp {image_path} {dest_class_dir}")
+            print(count)
 
 
 def mkdir(*path):
     for p in path:
         if not os.path.exists(p):
             os.makedirs(p)
-
-def list_split(input_list, ratio = [0.5, 0.5], shuffle = False):
-    assert sum(ratio) == 1, print("sum of ratio should be 1")
-    input_list = sorted(input_list)
-    len_list = len(input_list)
-
-    split_position = []
-    temp = 0
-    for i in ratio:
-        split_position.append(round(len_list*(temp+i)))
-        temp += i
-
-    return_list = np.split(input_list, split_position)
-    output_list = []
-    temp_sum = 0
-    for i in return_list:
-        if len(i) == 0:
-            continue
-        temp_sum += len(i)
-        output_list.append(i.tolist())
-
-    if temp_sum != len_list:
-        raise Exception("output list is len than input_list")
-    return output_list
 
 
 if __name__ == "__main__":
