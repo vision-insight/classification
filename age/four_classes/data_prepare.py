@@ -3,20 +3,16 @@ from torchvision import datasets, models, transforms
 import PIL
 from PIL import Image
 from multiprocessing import cpu_count
+import sys
 
 base_path = "/media/D/lulei/classification"
 sys.path.insert(0, base_path)
-<<<<<<< HEAD
 from tools.utils.torch_utils import *
-=======
-from classification.tools.utils.torch_utils import *
->>>>>>> ad5c491cd25727ada442831ef5986d4222cb7c8a
+from tools.utils.torch_utils import *
 from tools.utils.utils import *
 from tools.utils.sampler import BalancedBatchSampler
 from tools.utils.ImageFolder import ImageFolder
 os.system("clear")
-
-
 
 ################## 00 variables
 
@@ -97,7 +93,6 @@ dataloaders = {
 
                 "valid": DataLoader(data["valid"],
                                     batch_size=batch_size,
->>>>>>> 327dc0d1483608f664649dbfd34c0a79fc981db1
                                     shuffle=True,
                                     num_workers= cpu_count()),
                               }

@@ -22,11 +22,11 @@ model = MODELS(with_wts = True, class_num = n_classes).resnet34()
 
 model = model.cuda(device  = 0)
 
-criterion = nn.CrossEntropyLoss() #weight = class_weights.cuda(), reduction = "sum")
+criterion = nn.CrossEntropyLoss(weight = class_weights.cuda(), reduction = "sum")
 #criterion = 
 
 # Observe that all parameters are being optimized
-optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.9)
 #optimizer = optim.RMSprop(model.parameters(), lr= 0.001, alpha=0.9)
 #optimizer = optim.Adam(model.parameters(), lr=LR, betas=(0.9,0.99))
 
