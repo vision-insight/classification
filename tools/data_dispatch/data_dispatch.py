@@ -21,8 +21,8 @@ class data_dispatch:
         self.cfg_file = config_file
     
     def config_reader(self):
-        with open(self.cfg_file,encoding='UTF-8') as f:
-            content = f.readlines() #encoding='UTF-8'
+        with open(self.cfg_file, encoding='UTF-8') as f:
+            content = f.readlines()
         for line in content:
             temp = [i for i in line.replace('\t','  ').split("#")[0].strip().split(' ') \
                      if    i != '']

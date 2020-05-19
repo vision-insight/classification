@@ -1,7 +1,3 @@
-import os
-import sys
-import torch
-import pathlib
 from torch.utils.data import Dataset, DataLoader, random_split
 from torchvision import datasets, models, transforms
 import PIL
@@ -10,12 +6,17 @@ from multiprocessing import cpu_count
 
 base_path = "/media/D/lulei/classification"
 sys.path.insert(0, base_path)
+<<<<<<< HEAD
 from tools.utils.torch_utils import *
+=======
 from classification.tools.utils.torch_utils import *
+>>>>>>> ad5c491cd25727ada442831ef5986d4222cb7c8a
 from tools.utils.utils import *
 from tools.utils.sampler import BalancedBatchSampler
 from tools.utils.ImageFolder import ImageFolder
 os.system("clear")
+
+
 
 ################## 00 variables
 
@@ -39,7 +40,7 @@ idx_and_class = {0 : ['0-8', '8-18'],
 
 ########## 001 Data Transforms #####################
 
-image_trans = {
+image_trans = { 
     # transforms (a.k.a data augmentations) for the training images
     'train': transforms.Compose([
         # transfer the input image into gray scale
@@ -79,6 +80,10 @@ data["train"], data["valid"] = random_split(origin_data, (train_num, valid_num))
 data["train"].dataset.transform = image_trans['train']
 data["valid"].dataset.transform = image_trans['valid']
 
+#balanced_batch_sampler = BalancedBatchSampler(data["train"], n_classes = 4, n_samples = 20, batch_num = 80)
+
+#balanced_batch_sampler = BalancedBatchSampler(data["train"])
+
 for i in ["train", "valid"]:
         print(f"[INFO] {i} data num : {len(data[i])}")
 
@@ -91,7 +96,8 @@ dataloaders = {
                                 num_workers= cpu_count()),
 
                 "valid": DataLoader(data["valid"],
-                    batch_size=batch_size,
+                                    batch_size=batch_size,
+>>>>>>> 327dc0d1483608f664649dbfd34c0a79fc981db1
                                     shuffle=True,
                                     num_workers= cpu_count()),
                               }

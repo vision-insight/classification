@@ -18,55 +18,48 @@ os.system("clear")
 
 ################## 00 variable  Assignment ################################
 
-# Height and width of the CNN input image
 img_h, img_w = 260, 320
 
 n_classes = 2
 
-# Set train and valid directory paths
 dataset_dir = "/media/D/lulei/data/bald/split"
 
-# Batch size
-batch_size = 80
+batch_size = 50
 print("[INFO] batch size : ", batch_size)
 
 train_data_dir= os.path.join(dataset_dir, 'train')
 valid_data_dir = os.path.join(dataset_dir, 'valid')
-#test_data_dir = os.path.join(dataset_dir, 'test')
-
 
 ########## 001 Data Transforms #####################
 
 image_trans = { 
     'train': transforms.Compose([
-        # transfer the input image into gray scale
-        # transforms.Grayscale(num_output_channels=1),
-        # resize the input image into the predefined scale
-        # transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC), # (h, w)
-        transforms.Lambda(lambda img : pad_img(img, img_w)),
+
+        transforms.Grayscale(num_output_channels=1),
         transforms.RandomChoice([
-            transforms.Grayscale(num_output_channels=3),
             transforms.RandomHorizontalFlip(),
-            transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
+            #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
             #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
-            transforms.RandomRotation(10, resample=False, expand=False, center=None)
+            transforms.RandomRotation(30, resample=False, expand=True, center=None)
                                 ]),
+
+        transforms.Lambda(lambda img : pad_img(img, img_w)),
         transforms.ToTensor(),
                                 ]),
 
     'valid': transforms.Compose([
-        #transforms.Grayscale(num_output_channels=1),
+        transforms.Grayscale(num_output_channels=1),
         #transforms.Resize((img_h, img_w), interpolation=PIL.Image.BICUBIC),
         #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.4,0.3)),
         #transforms.Lambda(lambda img : head_center(img)),
         transforms.Lambda(lambda img : pad_img(img, img_w)),
-        transforms.RandomChoice([
-            transforms.Grayscale(num_output_channels=3),
-            transforms.RandomHorizontalFlip(),
-            transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
+        #transforms.RandomChoice([
+            #transforms.Grayscale(num_output_channels=3),
+            #transforms.RandomHorizontalFlip(),
+            #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
             #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
-            transforms.RandomRotation(10, resample=False, expand=False, center=None)
-                                ]),
+            #transforms.RandomRotation(10, resample=False, expand=False, center=None)
+                                #]),
         transforms.ToTensor(),
                                 ]),
 

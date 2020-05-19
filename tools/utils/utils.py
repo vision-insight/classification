@@ -33,22 +33,26 @@ def pad_img(image, long_side):
 
     return new_image
 
-def centralize(img,rw_ratio,lw_ratio,up_ratio,down_ratio):
+def centralize(img, l_ratio, r_ratio, up_ratio, down_ratio):
+    '''
+        l_ratio, r_ratio, up_ratio, down_ratio
+    '''
     
     iw, ih = img.size
-    center_x = iw / 2
-    center_y = ih / 2
-    rw = int(rw_ratio*iw)
-    lw = int(lw_ratio*iw)
-    up_h = int(up_ratio*ih)
-    down_h = int(down_ratio*ih)
+    center_x = iw // 2
+    center_y = ih // 2
+
+    rw = int(r_ratio * iw)
+    lw = int(l_ratio * iw)
+    up_h = int(up_ratio * ih)
+    down_h = int(down_ratio * ih)
 
     new_img= img.crop(
-    (
-        center_x - lw ,
-        center_y - up_h,
-        center_x + rw,
-        center_y + down_h
+     (
+        lw ,
+        up_h,
+        iw - rw,
+        ih - down_h
     )
     )
     return new_img
@@ -102,20 +106,20 @@ def get_class_weights(input_dir, idx_to_class, idx_first = True):
 
     return weights
 
-def list_split(input_list, divide_ratio = None, group_num = None, per_group_num = None, shuffle = False):
-    assert [divide_ratio, group_num, per_group_num].count(None) == 2, \
-            print("Only need to meet one condition : divide_ratio, group_num, per_group_num") 
+def list_split(input_list, split_ratio = None, group_num = None, per_group_num = None, shuffle = False):
+    assert [split_ratio, group_num, per_group_num].count(None) == 2, \
+            print("Only need to meet one condition : split_ratio, group_num, per_group_num") 
     
     if shuffle:
         random.shuffle(input_list)
     
-    if divide_ratio != None:
-        assert sum(divide_ratio) == 1, print("sum of ratio should be 1")
+    if split_ratio != None:
+        assert sum(split_ratio) == 1, print("sum of ratio should be 1")
         len_list = len(input_list)
         
         divide_position = []
         temp = 0
-        for i in divide_ratio:
+        for i in split_ratio:
             divide_position.append(round(temp*len(input_list)))
             temp += i
         
@@ -124,7 +128,7 @@ def list_split(input_list, divide_ratio = None, group_num = None, per_group_num 
             if len(i) == 0:
                 continue
             divided_list.append(i.tolist())
-    
+
         return divided_list
     
     elif group_num != None:
