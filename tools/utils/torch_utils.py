@@ -223,8 +223,6 @@ def computeTestSetAccuracy(model, loss_criterion):
 
     print("Test accuracy : " + str(avg_test_acc))
 
-
-
 def predict(model, test_image_name):
     '''
     Function to predict the class of a single test image
