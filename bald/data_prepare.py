@@ -18,7 +18,7 @@ os.system("clear")
 
 ################## 00 variable  Assignment ################################
 
-img_h, img_w = 260, 320
+img_h, img_w = 260, 140
 
 n_classes = 2
 
@@ -34,13 +34,12 @@ valid_data_dir = os.path.join(dataset_dir, 'valid')
 
 image_trans = { 
     'train': transforms.Compose([
-
         transforms.Grayscale(num_output_channels=1),
         transforms.RandomChoice([
             transforms.RandomHorizontalFlip(),
             #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
-            #transforms.Lambda(lambda img : centralize(img,0.4,0.4,0.5,0.5)),
-            transforms.RandomRotation(30, resample=False, expand=True, center=None)
+            transforms.RandomRotation(30, resample=False, expand=True, center=None),
+            transforms.Lambda(lambda image : centralize(image, 0,0,0,0.1)),
                                 ]),
 
         transforms.Lambda(lambda img : pad_img(img, img_w)),

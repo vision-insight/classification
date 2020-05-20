@@ -26,7 +26,7 @@ output_dir = "./output_images/"
 
 os.system("rm -rf ./output_images")
 os.system("mkdir output_images")
-os.system("echo *.jpg >> ../output_images/.gitignore")
+os.system("echo *.jpg >> ./output_images/.gitignore")
 
 data = ImageFolder(root = image_dir,
                    transform=image_trans["valid"])
@@ -37,7 +37,7 @@ dataloader = DataLoader(data,
                         num_workers = cpu_count()//4*3)
 
 ########### 00 load the model #####################################
-weights_file = "./output_models/bald_2_resnet18_0.9794_40_best_20200518_173824.pt"
+weights_file = "./output_models/bald_2_gray_resnet18_0.9934_6_best_20200519_173012.pt"
 
 ############ 01 model define #################################
 model_struc = MODELS(class_num = n_classes, with_wts = False).resnet18()
@@ -64,9 +64,9 @@ with torch.no_grad():
 
 
         cv2.putText(image, f"{label}", (20,20),\
-                cv2.FONT_HERSHEY_COMPLEX, 0.8, (255, 255, 255), 2)
+                cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 2)
         cv2.putText(image, f"{label}", (20,20), \
-                cv2.FONT_HERSHEY_COMPLEX, 0.8, (0, 0, 255), 1)
+                cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255), 1)
         
         out_dir = os.path.join(output_dir, label)
         if not os.path.isdir(out_dir):
