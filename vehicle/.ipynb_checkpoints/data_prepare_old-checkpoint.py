@@ -100,12 +100,12 @@ dataloaders = {
         "valid": DataLoader(data['valid'], 
                             batch_size=batch_size*2, 
                             shuffle=True,
-                            num_workers= cpu_count()//2),
+                            num_workers= cpu_count()),
 
         "test":  DataLoader(data['test'],
                             batch_size=batch_size*2, 
                             shuffle=True,
-                            num_workers= cpu_count()//2)
+                            num_workers= cpu_count())
             }
 
 
